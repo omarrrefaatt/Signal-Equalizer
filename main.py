@@ -1,7 +1,8 @@
 import sys
-
-
+import numpy as np
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
+from PyQt5.QtWidgets import QFileDialog, QPushButton
 
 
 class Ui_MainWindow(object):
@@ -343,10 +344,53 @@ class Ui_MainWindow(object):
         self.actionLoad.setObjectName("actionLoad")
         self.menuFile.addAction(self.actionLoad)
         self.menubar.addAction(self.menuFile.menuAction())
-
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(4)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+
+        self.actionLoad.triggered.connect(self.loadWavFile)  # Connect to loadWavFile method
+
+        self.pausePlayButton_3.clicked.connect(self.playPauseLoadedSound)  # Connect to playPauseLoadedSound method
+
+        self.rewindButton_3.clicked.connect(self.rewindLoadedSound)
+
+    def loadWavFile(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getOpenFileName(
+            None, "Load WAV File", "", "WAV Files (*.wav);;All Files (*)", options=options
+        )
+
+        if fileName:
+            self.file_path = fileName  # Store the file path
+            self.media_player = QMediaPlayer()
+            url = QtCore.QUrl.fromLocalFile(fileName)
+            content = QMediaContent(url)
+            self.media_player.setMedia(content)
+
+    def playPauseLoadedSound(self):
+        if hasattr(self, 'file_path') and self.file_path:
+            if not hasattr(self, 'media_player'):
+                media_content = QMediaContent(QtCore.QUrl.fromLocalFile(self.file_path))
+                self.media_player = QMediaPlayer()
+                self.media_player.setMedia(media_content)
+
+            if self.media_player.state() == QMediaPlayer.PlayingState:
+                self.media_player.pause()
+            else:
+                self.media_player.play()
+        else:
+            print("No file loaded.")
+
+
+    def rewindLoadedSound(self):
+        if hasattr(self, 'media_player'):
+            self.media_player.setPosition(0)
+        else:
+            print("No file loaded.")
+
+
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
