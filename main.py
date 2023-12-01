@@ -3,6 +3,8 @@ import numpy as np
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.QtWidgets import QFileDialog, QPushButton
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
 
 class Ui_MainWindow(object):
@@ -349,24 +351,32 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
 
+
         self.actionLoad.triggered.connect(self.loadWavFile)  # Connect to loadWavFile method
 
         self.pausePlayButton_3.clicked.connect(self.playPauseLoadedSound)  # Connect to playPauseLoadedSound method
+        self.pausePlayButton_2.clicked.connect(self.playPauseLoadedSound)  # Connect to playPauseLoadedSound method
 
         self.rewindButton_3.clicked.connect(self.rewindLoadedSound)
+        self.rewindButton_2.clicked.connect(self.rewindLoadedSound)
 
     def loadWavFile(self):
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
+        # Open a file dialog and get the selected file name
         fileName, _ = QFileDialog.getOpenFileName(
-            None, "Load WAV File", "", "WAV Files (*.wav);;All Files (*)", options=options
+            None, "Load WAV File", "", "WAV Files (*.wav);;All Files (*)"
         )
 
         if fileName:
             self.file_path = fileName  # Store the file path
             self.media_player = QMediaPlayer()
+
+            # Create a QUrl from the file name
             url = QtCore.QUrl.fromLocalFile(fileName)
+
+            # Create QMediaContent from the QUrl
             content = QMediaContent(url)
+
+            # Set the media content for the media player
             self.media_player.setMedia(content)
 
     def playPauseLoadedSound(self):
