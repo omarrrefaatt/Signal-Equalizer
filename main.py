@@ -11,7 +11,6 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 plt.rcParams['figure.max_open_warning'] = 50  # Set it to a value higher than 20
 
 class Ui_MainWindow(object):
-
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1113, 859)
@@ -58,10 +57,13 @@ class Ui_MainWindow(object):
         self.frame_8.setObjectName("frame_8")
         self.gridLayout_16 = QtWidgets.QGridLayout(self.frame_8)
         self.gridLayout_16.setObjectName("gridLayout_16")
+        self.label_8 = QtWidgets.QLabel(self.frame_8)
+        self.label_8.setObjectName("label_8")
+        self.gridLayout_16.addWidget(self.label_8, 3, 0, 1, 1)
         self.label = QtWidgets.QLabel(self.frame_8)
         self.label.setMaximumSize(QtCore.QSize(150, 20))
         self.label.setObjectName("label")
-        self.gridLayout_16.addWidget(self.label, 0, 0, 1, 1)
+        self.gridLayout_16.addWidget(self.label, 2, 0, 1, 1)
         self.smothingComboBox = QtWidgets.QComboBox(self.frame_8)
         self.smothingComboBox.setMaximumSize(QtCore.QSize(500, 25))
         self.smothingComboBox.setObjectName("smothingComboBox")
@@ -69,7 +71,11 @@ class Ui_MainWindow(object):
         self.smothingComboBox.addItem("")
         self.smothingComboBox.addItem("")
         self.smothingComboBox.addItem("")
-        self.gridLayout_16.addWidget(self.smothingComboBox, 0, 1, 1, 1)
+        self.gridLayout_16.addWidget(self.smothingComboBox, 2, 1, 1, 1)
+        self.stdSlider = QtWidgets.QSlider(self.frame_8)
+        self.stdSlider.setOrientation(QtCore.Qt.Horizontal)
+        self.stdSlider.setObjectName("stdSlider")
+        self.gridLayout_16.addWidget(self.stdSlider, 3, 1, 1, 1)
         self.gridLayout_2.addWidget(self.frame_8, 1, 0, 1, 1)
         self.gridLayout_18.addWidget(self.frame_2, 0, 0, 1, 1)
         self.tabWidget.addTab(self.smoothingWindowTab, "")
@@ -90,6 +96,7 @@ class Ui_MainWindow(object):
         self.gridLayout_10 = QtWidgets.QGridLayout(self.frame_9)
         self.gridLayout_10.setObjectName("gridLayout_10")
         self.uniformTimeLayout = QtWidgets.QVBoxLayout()
+        self.uniformTimeLayout.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
         self.uniformTimeLayout.setObjectName("uniformTimeLayout")
         self.gridLayout_10.addLayout(self.uniformTimeLayout, 0, 0, 1, 1)
         self.uniformFrequencyLayout = QtWidgets.QVBoxLayout()
@@ -553,9 +560,26 @@ class Ui_MainWindow(object):
         self.rewindButton_3.clicked.connect(self.rewindLoadedSound)
         self.rewindButton_2.clicked.connect(self.rewindLoadedSound)
 
+        self.smothingComboBox.currentIndexChanged.connect(self.chooseSmoothingWindow)
+
+        self.stdSlider.setMinimum(1)
+        self.stdSlider.setMaximum(20)
+        self.stdSlider.setValue(5)  # Initial value of sigma
+        self.stdSlider.valueChanged.connect(self.updateGaussian)
+
+        self.sigma = self.stdSlider.value()
+
     def init_empty_canvases(self):
             # Create an empty subplot for each canvas
-        self.smoothingWindowCanvas.figure.add_subplot(111)
+        window_type = self.smothingComboBox.currentText()
+
+        ax = self.smoothingWindowCanvas.figure.add_subplot(111)
+        ax.plot(np.ones(100))
+        ax.set_title(f"{window_type} Window")
+        ax.set_xlabel("Sample")
+        ax.set_ylabel("Amplitude")
+        ax.grid(True)
+        self.smoothingWindowCanvas.draw()
 
         self.unifromTimeInputCanvas.figure.add_subplot(111)
         self.unifromTimeOutputCanvas.figure.add_subplot(111)
@@ -608,9 +632,41 @@ class Ui_MainWindow(object):
         self.ecgFrequencyLayout.layout().addWidget(self.ecgFrequencyOutputCanvas)
         self.ecgFrequencyLayout.layout().addWidget(self.ecgSpectrogramCanvas)
 
+    def chooseSmoothingWindow(self):
+        window_type = self.smothingComboBox.currentText()
 
+        # Clear the existing plot
+        self.smoothingWindowCanvas.figure.clf()
 
-    #def chooseSmoothingWindow(self):
+        # Create a new subplot
+        ax = self.smoothingWindowCanvas.figure.add_subplot(111)
+
+        # Plot the selected window
+        if window_type == "Rectangle":
+            window = np.ones(100)  # Replace with your desired length
+        elif window_type == "Hamming":
+            window = np.hamming(100)  # Replace with your desired length
+        elif window_type == "Hanning":
+            window = np.hanning(100)  # Replace with your desired length
+        elif window_type == "Gaussian":
+            # You can customize the parameters of the Gaussian window
+            center = 50
+            window = np.exp(-(np.arange(100) - center) ** 2 / (2 * self.sigma ** 2))
+        # Add more conditions for other window types if needed
+
+        ax.plot(window)
+        ax.set_title(f"{window_type} Window")
+        ax.set_xlabel("Sample")
+        ax.set_ylabel("Amplitude")
+        ax.grid(True)
+
+        # Redraw the canvas
+        self.smoothingWindowCanvas.draw()
+
+    def updateGaussian(self):
+        self.sigma=self.stdSlider.value()
+        self.chooseSmoothingWindow()
+
 
     def loadWavFile(self):
         # Open a file dialog and get the selected file name
@@ -655,6 +711,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.label_8.setText(_translate("MainWindow", "Gaussian STD"))
         self.label.setText(_translate("MainWindow", "Smoothing Window"))
         self.smothingComboBox.setItemText(0, _translate("MainWindow", "Rectangle"))
         self.smothingComboBox.setItemText(1, _translate("MainWindow", "Gaussian"))
