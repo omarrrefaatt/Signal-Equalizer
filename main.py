@@ -527,31 +527,27 @@ class Ui_MainWindow(object):
 
         self.unifromTimeInputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.unifromTimeOutputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
-        self.unifromFrequencyInputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
-        self.unifromFrequencyOutputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
-        self.unifromSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
+        self.unifromFrequencyCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
+        self.unifromInputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
+        self.unifromOutputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
 
         self.animalTimeInputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.animalTimeOutputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
-        self.animalFrequencyInputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
-        self.animalSpectrogramOutputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
-        self.animalSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
+        self.animalFrequencyCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
+        self.animalInputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
+        self.animalOutputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
 
         self.musicTimeInputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.musicTimeOutputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
-        self.musicFrequencyInputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
-        self.musicSpectrogramOutputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
-        self.musicSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
+        self.musicFrequencyCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
+        self.musicInputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
+        self.musicOutputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
 
         self.ecgTimeInputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.ecgTimeOutputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
-        self.ecgFrequencyInputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
-        self.ecgFrequencyOutputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
-        self.ecgSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
-        #testing safwat
-        self.yaxis=[]
-        self.sample_rates =1
-        self.xaxis=[]
+        self.ecgFrequencyCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
+        self.ecgInputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
+        self.ecgOutputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
 
         # initialize empty canvases
         self.init_empty_canvases()
@@ -588,54 +584,54 @@ class Ui_MainWindow(object):
 
         self.unifromTimeInputCanvas.figure.add_subplot(111)
         self.unifromTimeOutputCanvas.figure.add_subplot(111)
-        self.unifromFrequencyInputCanvas.figure.add_subplot(111)
-        self.unifromFrequencyOutputCanvas.figure.add_subplot(111)
-        self.unifromSpectrogramCanvas.figure.add_subplot(111)
+        self.unifromFrequencyCanvas.figure.add_subplot(111)
+        self.unifromInputSpectrogramCanvas.figure.add_subplot(111)
+        self.unifromOutputSpectrogramCanvas.figure.add_subplot(111)
 
         self.animalTimeInputCanvas.figure.add_subplot(111)
         self.animalTimeOutputCanvas.figure.add_subplot(111)
-        self.animalFrequencyInputCanvas.figure.add_subplot(111)
-        self.animalSpectrogramOutputCanvas.figure.add_subplot(111)
-        self.animalSpectrogramCanvas.figure.add_subplot(111)
+        self.animalFrequencyCanvas.figure.add_subplot(111)
+        self.animalInputSpectrogramCanvas.figure.add_subplot(111)
+        self.animalOutputSpectrogramCanvas.figure.add_subplot(111)
 
         self.musicTimeInputCanvas.figure.add_subplot(111)
         self.musicTimeOutputCanvas.figure.add_subplot(111)
-        self.musicFrequencyInputCanvas.figure.add_subplot(111)
-        self.musicSpectrogramOutputCanvas.figure.add_subplot(111)
-        self.musicSpectrogramCanvas.figure.add_subplot(111)
+        self.musicFrequencyCanvas.figure.add_subplot(111)
+        self.musicInputSpectrogramCanvas.figure.add_subplot(111)
+        self.musicOutputSpectrogramCanvas.figure.add_subplot(111)
 
         self.ecgTimeInputCanvas.figure.add_subplot(111)
         self.ecgTimeOutputCanvas.figure.add_subplot(111)
-        self.ecgFrequencyInputCanvas.figure.add_subplot(111)
-        self.ecgFrequencyOutputCanvas.figure.add_subplot(111)
-        self.ecgSpectrogramCanvas.figure.add_subplot(111)
+        self.ecgFrequencyCanvas.figure.add_subplot(111)
+        self.ecgInputSpectrogramCanvas.figure.add_subplot(111)
+        self.ecgOutputSpectrogramCanvas.figure.add_subplot(111)
 
             # Add the empty canvases to the layouts
         self.smoothingWindowLayout.layout().addWidget(self.smoothingWindowCanvas)
 
         self.uniformTimeLayout.layout().addWidget(self.unifromTimeInputCanvas)
         self.uniformTimeLayout.layout().addWidget(self.unifromTimeOutputCanvas)
-        self.uniformFrequencyLayout.layout().addWidget(self.unifromFrequencyInputCanvas)
-        self.uniformFrequencyLayout.layout().addWidget(self.unifromFrequencyOutputCanvas)
-        self.uniformFrequencyLayout.layout().addWidget(self.unifromSpectrogramCanvas)
+        self.uniformFrequencyLayout.layout().addWidget(self.unifromFrequencyCanvas)
+        self.uniformFrequencyLayout.layout().addWidget(self.unifromInputSpectrogramCanvas)
+        self.uniformFrequencyLayout.layout().addWidget(self.unifromOutputSpectrogramCanvas)
 
         self.animalTimeLayout.layout().addWidget(self.animalTimeInputCanvas)
         self.animalTimeLayout.layout().addWidget(self.animalTimeOutputCanvas)
-        self.animalFrequencyLayout.layout().addWidget(self.animalFrequencyInputCanvas)
-        self.animalFrequencyLayout.layout().addWidget(self.animalSpectrogramOutputCanvas)
-        self.animalFrequencyLayout.layout().addWidget(self.animalSpectrogramCanvas)
+        self.animalFrequencyLayout.layout().addWidget(self.animalFrequencyCanvas)
+        self.animalFrequencyLayout.layout().addWidget(self.animalInputSpectrogramCanvas)
+        self.animalFrequencyLayout.layout().addWidget(self.animalOutputSpectrogramCanvas)
 
         self.musicalTimeLayout.layout().addWidget(self.musicTimeInputCanvas)
         self.musicalTimeLayout.layout().addWidget(self.musicTimeOutputCanvas)
-        self.musicalFrequencyLayout.layout().addWidget(self.musicFrequencyInputCanvas)
-        self.musicalFrequencyLayout.layout().addWidget(self.musicSpectrogramOutputCanvas)
-        self.musicalFrequencyLayout.layout().addWidget(self.musicSpectrogramCanvas)
+        self.musicalFrequencyLayout.layout().addWidget(self.musicFrequencyCanvas)
+        self.musicalFrequencyLayout.layout().addWidget(self.musicInputSpectrogramCanvas)
+        self.musicalFrequencyLayout.layout().addWidget(self.musicOutputSpectrogramCanvas)
 
         self.ecgTimeLayout.layout().addWidget(self.ecgTimeInputCanvas)
         self.ecgTimeLayout.layout().addWidget(self.ecgTimeOutputCanvas)
-        self.ecgFrequencyLayout.layout().addWidget(self.ecgFrequencyInputCanvas)
-        self.ecgFrequencyLayout.layout().addWidget(self.ecgFrequencyOutputCanvas)
-        self.ecgFrequencyLayout.layout().addWidget(self.ecgSpectrogramCanvas)
+        self.ecgFrequencyLayout.layout().addWidget(self.ecgFrequencyCanvas)
+        self.ecgFrequencyLayout.layout().addWidget(self.ecgInputSpectrogramCanvas)
+        self.ecgFrequencyLayout.layout().addWidget(self.ecgOutputSpectrogramCanvas)
 
     def chooseSmoothingWindow(self):
         window_type = self.smothingComboBox.currentText()
@@ -672,21 +668,6 @@ class Ui_MainWindow(object):
         self.sigma=self.stdSlider.value()
         self.chooseSmoothingWindow()
 
-
-    def OpenFile(self):
-     file_dialog = QFileDialog()
-     file_dialog.setNameFilter("WAV files (*.wav)")
-     file_dialog.setWindowTitle("Open WAV File")
-     file_dialog.setFileMode(QFileDialog.ExistingFile)
-     if file_dialog.exec_():
-        self.getcurrentwidgets()
-        file_path = file_dialog.selectedFiles()[0]
-        self.yaxis,self.sample_rate  = librosa.load(file_path)
-       
-        self.time_domain_X_coordinates = np.arange(len(self.yaxis)) / self.sample_rate
-        self.time_domain_Y_coordinates = self.yaxis
-
-
     def loadWavFile(self):
         # Open a file dialog and get the selected file name
         fileName, _ = QFileDialog.getOpenFileName(
@@ -705,50 +686,66 @@ class Ui_MainWindow(object):
 
             # Set the media content for the media player
             self.media_player.setMedia(content)
-            #reading file data
-            yaxis,self.sample_rate  = librosa.load(self.file_path)
+
+            # Reading file data
+            yaxis, self.sample_rate = librosa.load(self.file_path)
+
+            # Time domain coordinates
             self.time_domain_X_coordinates = np.arange(len(yaxis)) / self.sample_rate
             self.time_domain_Y_coordinates = yaxis
-            self.plot_coordinates_on_canvas(self.animalTimeInputCanvas ,self.time_domain_X_coordinates, self.time_domain_Y_coordinates)
-            fft_result = fft(self.time_domain_Y_coordinates)
-            frequencies = np.fft.fftfreq(len(fft_result), 1 / self.sample_rate)
-            self.plot_coordinates_on_canvas(self.animalFrequencyInputCanvas,frequencies, np.abs(fft_result))
-            # ax = self.animalTimeInputCanvas.figure.add_subplot(111)
-            # ax.plot(self.time_domain_X_coordinates,self.time_domain_Y_coordinates)
-            # ax.set_title(f"omar")
-            # ax.set_xlabel("Sample")
-            # ax.set_ylabel("Amplitude")
-            # ax.grid(True)
-            # self.animalTimeInputCanvas.draw()
-            # fft_result = fft(self.time_domain_Y_coordinates)
-            # frequencies = np.fft.fftfreq(len(fft_result), 1 / self.sample_rate)
-            # az = self.animalFrequencyInputCanvas.figure.add_subplot(111)
-            # az.plot(frequencies, np.abs(fft_result))
-            # az.set_title(f"frequency")
-            # az.set_xlabel("Sample")
-            # az.set_ylabel("Amplitude")
-            # az.grid(True)
-            # self.animalFrequencyInputCanvas.draw()
 
-    def plot_coordinates_on_canvas(self,canvas, x, y):
+            # Store x and y coordinates as a list of tuples
+            self.xy_coordinates = list(zip(self.time_domain_X_coordinates, self.time_domain_Y_coordinates))
+
+            # FFT coordinates
+            self.fft_result = fft(self.time_domain_Y_coordinates)
+            self.frequencies = np.fft.fftfreq(len(self.fft_result), 1 / self.sample_rate)
+
+            #check current tab
+            currentTabindex=self.tabWidget.currentIndex()
+
+            if currentTabindex == 1:
+                self.plotTimeDomain(self.unifromTimeInputCanvas,self.xy_coordinates)
+                self.plotFrequencyDomain(self.unifromFrequencyCanvas)
+
+            elif currentTabindex == 2:
+                self.plotTimeDomain(self.animalTimeInputCanvas, self.xy_coordinates)
+                self.plotFrequencyDomain(self.animalFrequencyCanvas)
+
+            elif currentTabindex == 3:
+                self.plotTimeDomain(self.musicTimeInputCanvas, self.xy_coordinates)
+                self.plotFrequencyDomain(self.musicFrequencyCanvas)
+
+            elif currentTabindex == 4:
+                self.plotTimeDomain(self.ecgTimeInputCanvas, self.xy_coordinates)
+                self.plotFrequencyDomain(self.ecgFrequencyCanvas)
+
+
+    def plotTimeDomain(self, canvas, xy_coordinates):
+        ax = canvas.figure.clear()
         ax = canvas.figure.add_subplot(111)
+
+        # Unpack the list of xy coordinates into separate lists of x and y
+        x, y = zip(*xy_coordinates)
+
         ax.plot(x, y)
-        ax.set_title("Frequency Plot")
-        ax.set_xlabel("Sample")
+        ax.set_title("Time Domain Plot")
+        ax.set_xlabel("Time (s)")
         ax.set_ylabel("Amplitude")
         ax.grid(True)
-        canvas.draw()        
+        canvas.draw()
 
-    def plot_frequency_domain(signal, framerate):
-        fft_result = fft(signal)
-        frequencies = np.fft.fftfreq(len(fft_result), 1 / framerate)
+    def plotFrequencyDomain(self, canvas):
 
-        plt.figure(figsize=(10, 4))
-        plt.plot(frequencies, np.abs(fft_result))
-        plt.title("Frequency Domain Analysis")
-        plt.xlabel("Frequency (Hz)")
-        plt.ylabel("Amplitude")
-        plt.show()
+        ax = canvas.figure.clear()
+        ax = canvas.figure.add_subplot(111)
+
+        ax.plot(self.frequencies, np.abs(self.fft_result))
+        ax.set_title("Frequency Domain Plot")
+        ax.set_xlabel("Frequency (Hz)")
+        ax.set_ylabel("Amplitude")
+        ax.grid(True)
+        canvas.draw()
 
     def playPauseLoadedSound(self):
         if hasattr(self, 'file_path') and self.file_path:
