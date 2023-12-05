@@ -6,7 +6,8 @@ from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.QtWidgets import QFileDialog, QPushButton
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-
+import librosa as librosa
+from scipy.fft import fft
 # Increase the threshold for the warning
 plt.rcParams['figure.max_open_warning'] = 50  # Set it to a value higher than 20
 
@@ -547,6 +548,10 @@ class Ui_MainWindow(object):
         self.ecgFrequencyInputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.ecgFrequencyOutputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.ecgSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
+        #testing safwat
+        self.yaxis=[]
+        self.sample_rates =1
+        self.xaxis=[]
 
         # initialize empty canvases
         self.init_empty_canvases()
@@ -617,13 +622,13 @@ class Ui_MainWindow(object):
         self.animalTimeLayout.layout().addWidget(self.animalTimeInputCanvas)
         self.animalTimeLayout.layout().addWidget(self.animalTimeOutputCanvas)
         self.animalFrequencyLayout.layout().addWidget(self.animalFrequencyInputCanvas)
-        self.animalFrequencyLayout.layout().addWidget(self.animalFrequencyOutputCanvas)
+        self.animalFrequencyLayout.layout().addWidget(self.animalSpectrogramOutputCanvas)
         self.animalFrequencyLayout.layout().addWidget(self.animalSpectrogramCanvas)
 
         self.musicalTimeLayout.layout().addWidget(self.musicTimeInputCanvas)
         self.musicalTimeLayout.layout().addWidget(self.musicTimeOutputCanvas)
         self.musicalFrequencyLayout.layout().addWidget(self.musicFrequencyInputCanvas)
-        self.musicalFrequencyLayout.layout().addWidget(self.musicFrequencyOutputCanvas)
+        self.musicalFrequencyLayout.layout().addWidget(self.musicSpectrogramOutputCanvas)
         self.musicalFrequencyLayout.layout().addWidget(self.musicSpectrogramCanvas)
 
         self.ecgTimeLayout.layout().addWidget(self.ecgTimeInputCanvas)
@@ -668,6 +673,20 @@ class Ui_MainWindow(object):
         self.chooseSmoothingWindow()
 
 
+    def OpenFile(self):
+     file_dialog = QFileDialog()
+     file_dialog.setNameFilter("WAV files (*.wav)")
+     file_dialog.setWindowTitle("Open WAV File")
+     file_dialog.setFileMode(QFileDialog.ExistingFile)
+     if file_dialog.exec_():
+        self.getcurrentwidgets()
+        file_path = file_dialog.selectedFiles()[0]
+        self.yaxis,self.sample_rate  = librosa.load(file_path)
+       
+        self.time_domain_X_coordinates = np.arange(len(self.yaxis)) / self.sample_rate
+        self.time_domain_Y_coordinates = self.yaxis
+
+
     def loadWavFile(self):
         # Open a file dialog and get the selected file name
         fileName, _ = QFileDialog.getOpenFileName(
@@ -686,6 +705,50 @@ class Ui_MainWindow(object):
 
             # Set the media content for the media player
             self.media_player.setMedia(content)
+            #reading file data
+            yaxis,self.sample_rate  = librosa.load(self.file_path)
+            self.time_domain_X_coordinates = np.arange(len(yaxis)) / self.sample_rate
+            self.time_domain_Y_coordinates = yaxis
+            self.plot_coordinates_on_canvas(self.animalTimeInputCanvas ,self.time_domain_X_coordinates, self.time_domain_Y_coordinates)
+            fft_result = fft(self.time_domain_Y_coordinates)
+            frequencies = np.fft.fftfreq(len(fft_result), 1 / self.sample_rate)
+            self.plot_coordinates_on_canvas(self.animalFrequencyInputCanvas,frequencies, np.abs(fft_result))
+            # ax = self.animalTimeInputCanvas.figure.add_subplot(111)
+            # ax.plot(self.time_domain_X_coordinates,self.time_domain_Y_coordinates)
+            # ax.set_title(f"omar")
+            # ax.set_xlabel("Sample")
+            # ax.set_ylabel("Amplitude")
+            # ax.grid(True)
+            # self.animalTimeInputCanvas.draw()
+            # fft_result = fft(self.time_domain_Y_coordinates)
+            # frequencies = np.fft.fftfreq(len(fft_result), 1 / self.sample_rate)
+            # az = self.animalFrequencyInputCanvas.figure.add_subplot(111)
+            # az.plot(frequencies, np.abs(fft_result))
+            # az.set_title(f"frequency")
+            # az.set_xlabel("Sample")
+            # az.set_ylabel("Amplitude")
+            # az.grid(True)
+            # self.animalFrequencyInputCanvas.draw()
+
+    def plot_coordinates_on_canvas(self,canvas, x, y):
+        ax = canvas.figure.add_subplot(111)
+        ax.plot(x, y)
+        ax.set_title("Frequency Plot")
+        ax.set_xlabel("Sample")
+        ax.set_ylabel("Amplitude")
+        ax.grid(True)
+        canvas.draw()        
+
+    def plot_frequency_domain(signal, framerate):
+        fft_result = fft(signal)
+        frequencies = np.fft.fftfreq(len(fft_result), 1 / framerate)
+
+        plt.figure(figsize=(10, 4))
+        plt.plot(frequencies, np.abs(fft_result))
+        plt.title("Frequency Domain Analysis")
+        plt.xlabel("Frequency (Hz)")
+        plt.ylabel("Amplitude")
+        plt.show()
 
     def playPauseLoadedSound(self):
         if hasattr(self, 'file_path') and self.file_path:
