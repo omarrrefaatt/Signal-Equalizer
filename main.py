@@ -533,13 +533,13 @@ class Ui_MainWindow(object):
         self.animalTimeInputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.animalTimeOutputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.animalFrequencyInputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
-        self.animalFrequencyOutputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
+        self.animalSpectrogramOutputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.animalSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
 
         self.musicTimeInputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.musicTimeOutputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.musicFrequencyInputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
-        self.musicFrequencyOutputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
+        self.musicSpectrogramOutputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.musicSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
 
         self.ecgTimeInputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
@@ -590,13 +590,13 @@ class Ui_MainWindow(object):
         self.animalTimeInputCanvas.figure.add_subplot(111)
         self.animalTimeOutputCanvas.figure.add_subplot(111)
         self.animalFrequencyInputCanvas.figure.add_subplot(111)
-        self.animalFrequencyOutputCanvas.figure.add_subplot(111)
+        self.animalSpectrogramOutputCanvas.figure.add_subplot(111)
         self.animalSpectrogramCanvas.figure.add_subplot(111)
 
         self.musicTimeInputCanvas.figure.add_subplot(111)
         self.musicTimeOutputCanvas.figure.add_subplot(111)
         self.musicFrequencyInputCanvas.figure.add_subplot(111)
-        self.musicFrequencyOutputCanvas.figure.add_subplot(111)
+        self.musicSpectrogramOutputCanvas.figure.add_subplot(111)
         self.musicSpectrogramCanvas.figure.add_subplot(111)
 
         self.ecgTimeInputCanvas.figure.add_subplot(111)
