@@ -743,7 +743,10 @@ class Ui_MainWindow(object):
         ax = canvas.figure.clear()
         ax = canvas.figure.add_subplot(111)
 
-        ax.plot(self.frequencies, np.abs(self.fft_result))
+
+
+
+        ax.plot(np.abs(self.frequencies), np.abs(self.fft_result))
         ax.set_title("Frequency Domain Plot")
         ax.set_xlabel("Frequency (Hz)")
         ax.set_ylabel("Amplitude")
