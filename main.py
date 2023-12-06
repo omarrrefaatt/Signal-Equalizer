@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import librosa as librosa
 from scipy.fft import fft
+from cine_canvas import MplCanvas
 # Increase the threshold for the warning
 plt.rcParams['figure.max_open_warning'] = 50  # Set it to a value higher than 20
 
@@ -525,25 +526,25 @@ class Ui_MainWindow(object):
         # create canvas
         self.smoothingWindowCanvas = FigureCanvas(plt.figure(figsize=(4, 3)))
 
-        self.unifromTimeInputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
+        self.unifromTimeInputCanvas = MplCanvas(MainWindow,1,1)
         self.unifromTimeOutputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.unifromFrequencyCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.unifromInputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.unifromOutputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
 
-        self.animalTimeInputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
+        self.animalTimeInputCanvas = MplCanvas(MainWindow,1,1)
         self.animalTimeOutputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.animalFrequencyCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.animalInputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.animalOutputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
 
-        self.musicTimeInputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
+        self.musicTimeInputCanvas =  MplCanvas(MainWindow,1,1)
         self.musicTimeOutputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.musicFrequencyCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.musicInputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.musicOutputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
 
-        self.ecgTimeInputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
+        self.ecgTimeInputCanvas = MplCanvas(MainWindow,1,1)
         self.ecgTimeOutputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.ecgFrequencyCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.ecgInputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
@@ -582,25 +583,25 @@ class Ui_MainWindow(object):
         ax.grid(True)
         self.smoothingWindowCanvas.draw()
 
-        self.unifromTimeInputCanvas.figure.add_subplot(111)
+        #self.unifromTimeInputCanvas.figure.add_subplot(111)
         self.unifromTimeOutputCanvas.figure.add_subplot(111)
         self.unifromFrequencyCanvas.figure.add_subplot(111)
         self.unifromInputSpectrogramCanvas.figure.add_subplot(111)
         self.unifromOutputSpectrogramCanvas.figure.add_subplot(111)
 
-        self.animalTimeInputCanvas.figure.add_subplot(111)
+        #self.animalTimeInputCanvas.figure.add_subplot(111)
         self.animalTimeOutputCanvas.figure.add_subplot(111)
         self.animalFrequencyCanvas.figure.add_subplot(111)
         self.animalInputSpectrogramCanvas.figure.add_subplot(111)
         self.animalOutputSpectrogramCanvas.figure.add_subplot(111)
 
-        self.musicTimeInputCanvas.figure.add_subplot(111)
+        #self.musicTimeInputCanvas.figure.add_subplot(111)
         self.musicTimeOutputCanvas.figure.add_subplot(111)
         self.musicFrequencyCanvas.figure.add_subplot(111)
         self.musicInputSpectrogramCanvas.figure.add_subplot(111)
         self.musicOutputSpectrogramCanvas.figure.add_subplot(111)
 
-        self.ecgTimeInputCanvas.figure.add_subplot(111)
+        #self.ecgTimeInputCanvas.figure.add_subplot(111)
         self.ecgTimeOutputCanvas.figure.add_subplot(111)
         self.ecgFrequencyCanvas.figure.add_subplot(111)
         self.ecgInputSpectrogramCanvas.figure.add_subplot(111)
@@ -722,18 +723,20 @@ class Ui_MainWindow(object):
 
 
     def plotTimeDomain(self, canvas, xy_coordinates):
-        ax = canvas.figure.clear()
-        ax = canvas.figure.add_subplot(111)
+        #ax = canvas.figure.clear()
+        #ax = canvas.figure.add_subplot(111)
+        x, y = zip(*xy_coordinates)
+        canvas.upload_data(x,y)
 
         # Unpack the list of xy coordinates into separate lists of x and y
         x, y = zip(*xy_coordinates)
 
-        ax.plot(x, y)
-        ax.set_title("Time Domain Plot")
-        ax.set_xlabel("Time (s)")
-        ax.set_ylabel("Amplitude")
-        ax.grid(True)
-        canvas.draw()
+        #ax.plot(x, y)
+        #ax.set_title("Time Domain Plot")
+        #ax.set_xlabel("Time (s)")
+        #ax.set_ylabel("Amplitude")
+        #ax.grid(True)
+        #canvas.draw()
 
     def plotFrequencyDomain(self, canvas):
 
