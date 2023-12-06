@@ -16,13 +16,13 @@ class MplCanvas(FigureCanvas):
         self.x_data=list()
         self.y_data=list()
         self.data_size=0
-        self.window_size=500
+        self.window_size=1000
         self.data_plotted=0
         self.y_min = 0
         self.y_max = 0
         self.y_min_original = 0
         self.y_max_original = 0
-        self.shift_amount=10
+        self.shift_amount=50
         self.time_of_drawing=1
         self.timer =  QtCore.QTimer()
     def upload_data(self,x_data,y_data):
