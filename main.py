@@ -281,10 +281,10 @@ class Ui_MainWindow(object):
         self.gridLayout_34.addLayout(self.gridLayout_25, 0, 2, 1, 1)
         self.gridLayout_26 = QtWidgets.QGridLayout()
         self.gridLayout_26.setObjectName("gridLayout_26")
-        self.animalSlider_10 = QtWidgets.QSlider(self.frame_14)
-        self.animalSlider_10.setOrientation(QtCore.Qt.Vertical)
-        self.animalSlider_10.setObjectName("animalSlider_10")
-        self.gridLayout_26.addWidget(self.animalSlider_10, 0, 0, 1, 1)
+        self.animalSlider_2 = QtWidgets.QSlider(self.frame_14)
+        self.animalSlider_2.setOrientation(QtCore.Qt.Vertical)
+        self.animalSlider_2.setObjectName("animalSlider_2")
+        self.gridLayout_26.addWidget(self.animalSlider_2, 0, 0, 1, 1)
         self.label_16 = QtWidgets.QLabel(self.frame_14)
         self.label_16.setObjectName("label_16")
         self.gridLayout_26.addWidget(self.label_16, 1, 0, 1, 1)
@@ -553,6 +553,19 @@ class Ui_MainWindow(object):
         # initialize empty canvases
         self.init_empty_canvases()
 
+        self.animalSlider_1.setRange(0,10)
+        self.animalSlider_1.setValue(10)
+        self.animalSlider_1.valueChanged.connect(lambda value, range=1: self.changeyfrequencycomp(value, range))
+        self.animalSlider_2.setRange(0,10)
+        self.animalSlider_2.setValue(10)
+        self.animalSlider_2.valueChanged.connect(lambda value, range=2: self.changeyfrequencycomp(value, range))
+        self.animalSlider_3.setRange(0,10)
+        self.animalSlider_3.setValue(10)
+        self.animalSlider_3.valueChanged.connect(lambda value, range=3: self.changeyfrequencycomp(value, range))
+        self.animalSlider_4.setRange(0,10)
+        self.animalSlider_4.setValue(10)
+        self.animalSlider_4.valueChanged.connect(lambda value, range=4: self.changeyfrequencycomp(value, range))
+
 
         self.actionOpen.triggered.connect(self.loadWavFile)  # Connect to loadWavFile method
 
@@ -704,22 +717,24 @@ class Ui_MainWindow(object):
 
             #check current tab
             currentTabindex=self.tabWidget.currentIndex()
+            
+        
 
             if currentTabindex == 1:
                 self.plotTimeDomain(self.unifromTimeInputCanvas,self.xy_coordinates)
-                self.plotFrequencyDomain(self.unifromFrequencyCanvas)
+                self.plotFrequencyDomain(self.unifromFrequencyCanvas,self.frequencies,self.fft_result)
 
             elif currentTabindex == 2:
                 self.plotTimeDomain(self.animalTimeInputCanvas, self.xy_coordinates)
-                self.plotFrequencyDomain(self.animalFrequencyCanvas)
+                self.plotFrequencyDomain(self.animalFrequencyCanvas,self.frequencies,self.fft_result)
 
             elif currentTabindex == 3:
                 self.plotTimeDomain(self.musicTimeInputCanvas, self.xy_coordinates)
-                self.plotFrequencyDomain(self.musicFrequencyCanvas)
+                self.plotFrequencyDomain(self.musicFrequencyCanvas,self.frequencies,self.fft_result)
 
             elif currentTabindex == 4:
                 self.plotTimeDomain(self.ecgTimeInputCanvas, self.xy_coordinates)
-                self.plotFrequencyDomain(self.ecgFrequencyCanvas)
+                self.plotFrequencyDomain(self.ecgFrequencyCanvas,self.frequencies,self.fft_result)
 
 
     def plotTimeDomain(self, canvas, xy_coordinates):
@@ -738,20 +753,32 @@ class Ui_MainWindow(object):
         #ax.grid(True)
         #canvas.draw()
 
-    def plotFrequencyDomain(self, canvas):
+    def plotFrequencyDomain(self, canvas,x,y):
 
         ax = canvas.figure.clear()
         ax = canvas.figure.add_subplot(111)
 
 
-
-
-        ax.plot(np.abs(self.frequencies), np.abs(self.fft_result))
+        ax.plot(np.abs(x), np.abs(y))
         ax.set_title("Frequency Domain Plot")
         ax.set_xlabel("Frequency (Hz)")
         ax.set_ylabel("Amplitude")
         ax.grid(True)
         canvas.draw()
+    
+    def changeyfrequencycomp(self, value, custom_range):
+        self.temparray = self.fft_result
+        for i, frequency in enumerate(abs(self.frequencies)):
+            if custom_range == 1 and  frequency < 5000:
+                self.temparray[i] = self.fft_result[i]*(value / 10)
+            elif custom_range == 2 and 5000 < frequency < 10000:
+                self.temparray[i] = self.fft_result[i] * (value / 10)
+            elif custom_range == 3 and 10000 < frequency < 15000:
+                self.temparray[i] = self.fft_result[i] * (value / 10)
+            elif custom_range == 4 and 15000 < frequency < 20000:
+                self.temparray[i] = self.fft_result[i] * (value / 10)
+            
+            self.plotFrequencyDomain(self.animalFrequencyCanvas,self.frequencies,self.temparray)        
 
     def playPauseLoadedSound(self):
         if hasattr(self, 'file_path') and self.file_path:
