@@ -9,7 +9,6 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import librosa as librosa
 from scipy.fft import fft
 from cine_canvas import MplCanvas
-import scipy.io.wavfile as wavf
 # Increase the threshold for the warning
 plt.rcParams['figure.max_open_warning'] = 50  # Set it to a value higher than 20
 
@@ -528,57 +527,58 @@ class Ui_MainWindow(object):
         self.smoothingWindowCanvas = FigureCanvas(plt.figure(figsize=(4, 3)))
 
         self.unifromTimeInputCanvas = MplCanvas(MainWindow,1,1)
-        self.unifromTimeOutputCanvas = MplCanvas(MainWindow,1,1)
+        self.unifromTimeOutputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.unifromFrequencyCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.unifromInputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.unifromOutputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
 
         self.animalTimeInputCanvas = MplCanvas(MainWindow,1,1)
-        self.animalTimeOutputCanvas = MplCanvas(MainWindow,1,1)
+        self.animalTimeOutputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.animalFrequencyCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.animalInputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.animalOutputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
 
         self.musicTimeInputCanvas =  MplCanvas(MainWindow,1,1)
-        self.musicTimeOutputCanvas = MplCanvas(MainWindow,1,1)
+        self.musicTimeOutputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.musicFrequencyCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.musicInputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.musicOutputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
 
         self.ecgTimeInputCanvas = MplCanvas(MainWindow,1,1)
-        self.ecgTimeOutputCanvas = MplCanvas(MainWindow,1,1)
+        self.ecgTimeOutputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.ecgFrequencyCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.ecgInputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.ecgOutputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
 
         # initialize empty canvases
         self.init_empty_canvases()
-        # initialize animal slider
-        self.animalSlider_1.setRange(0,10)
-        self.animalSlider_1.setValue(10)
-        self.animalSlider_1.valueChanged.connect(lambda value, range=1: self.animalfrequencycomp(value, range))
-        self.animalSlider_2.setRange(0,10)
-        self.animalSlider_2.setValue(10)
-        self.animalSlider_2.valueChanged.connect(lambda value, range=2: self.animalfrequencycomp(value, range))
-        self.animalSlider_3.setRange(0,10)
-        self.animalSlider_3.setValue(10)
-        self.animalSlider_3.valueChanged.connect(lambda value, range=3: self.animalfrequencycomp(value, range))
-        self.animalSlider_4.setRange(0,10)
-        self.animalSlider_4.setValue(10)
-        self.animalSlider_4.valueChanged.connect(lambda value, range=4: self.animalfrequencycomp(value, range))
-        #initialize music slider
-        self.musicSlider_1.setRange(0,10)
-        self.musicSlider_1.setValue(10)
-        self.musicSlider_1.valueChanged.connect(lambda value, range=1: self.musicfrequencycomp(value, range))
-        self.musicSlider_2.setRange(0,10)
-        self.musicSlider_2.setValue(10)
-        self.musicSlider_2.valueChanged.connect(lambda value, range=2: self.musicfrequencycomp(value, range))
-        self.musicSlider_3.setRange(0,10)
-        self.musicSlider_3.setValue(10)
-        self.musicSlider_3.valueChanged.connect(lambda value, range=3: self.musicfrequencycomp(value, range))
-        self.musicSlider_4.setRange(0,10)
-        self.musicSlider_4.setValue(10)
-        self.musicSlider_4.valueChanged.connect(lambda value, range=4: self.musicfrequencycomp(value, range))
+
+
+        for i in range(1, 11):
+            slider_name1 = f"uniforRangeSlider_{i}"
+            slider_instance1 = getattr(self, slider_name1, None)
+            if slider_instance1 is not None:
+                slider_instance1.setRange(0,10)
+                slider_instance1.setValue(10)
+                slider_instance1.valueChanged.connect(lambda value, range=i-1: self.uniformfrecuencyupdate(value, range))
+        
+        for i in range(1, 5):
+            slider_name2 = f"animalSlider_{i}"
+            slider_instance2 = getattr(self, slider_name2, None)
+            if slider_instance2 is not None:
+                slider_instance2.setRange(0,10)
+                slider_instance2.setValue(10)
+                slider_instance2.valueChanged.connect(lambda value, range=i: self.animalfrequencycomp(value, range))
+
+        for i in range(1, 5):
+            slider_name3 = f"musicSlider_{i}"
+            slider_instance3 = getattr(self, slider_name3, None)
+            if slider_instance3 is not None:
+                slider_instance3.setRange(0,10)
+                slider_instance3.setValue(10)
+                slider_instance3.valueChanged.connect(lambda value, range=i: self.musicfrequencycomp(value, range))
+
+
 
         self.actionOpen.triggered.connect(self.loadWavFile)  # Connect to loadWavFile method
 
@@ -610,25 +610,25 @@ class Ui_MainWindow(object):
         self.smoothingWindowCanvas.draw()
 
         #self.unifromTimeInputCanvas.figure.add_subplot(111)
-        #self.unifromTimeOutputCanvas.figure.add_subplot(111)
+        self.unifromTimeOutputCanvas.figure.add_subplot(111)
         self.unifromFrequencyCanvas.figure.add_subplot(111)
         self.unifromInputSpectrogramCanvas.figure.add_subplot(111)
         self.unifromOutputSpectrogramCanvas.figure.add_subplot(111)
 
         #self.animalTimeInputCanvas.figure.add_subplot(111)
-        #self.animalTimeOutputCanvas.figure.add_subplot(111)
+        self.animalTimeOutputCanvas.figure.add_subplot(111)
         self.animalFrequencyCanvas.figure.add_subplot(111)
         self.animalInputSpectrogramCanvas.figure.add_subplot(111)
         self.animalOutputSpectrogramCanvas.figure.add_subplot(111)
 
         #self.musicTimeInputCanvas.figure.add_subplot(111)
-        #self.musicTimeOutputCanvas.figure.add_subplot(111)
+        self.musicTimeOutputCanvas.figure.add_subplot(111)
         self.musicFrequencyCanvas.figure.add_subplot(111)
         self.musicInputSpectrogramCanvas.figure.add_subplot(111)
         self.musicOutputSpectrogramCanvas.figure.add_subplot(111)
 
         #self.ecgTimeInputCanvas.figure.add_subplot(111)
-        #self.ecgTimeOutputCanvas.figure.add_subplot(111)
+        self.ecgTimeOutputCanvas.figure.add_subplot(111)
         self.ecgFrequencyCanvas.figure.add_subplot(111)
         self.ecgInputSpectrogramCanvas.figure.add_subplot(111)
         self.ecgOutputSpectrogramCanvas.figure.add_subplot(111)
@@ -736,20 +736,23 @@ class Ui_MainWindow(object):
             if currentTabindex == 1:
                 self.plotTimeDomain(self.unifromTimeInputCanvas,self.xy_coordinates)
                 self.plotFrequencyDomain(self.unifromFrequencyCanvas,self.frequencies,np.abs(self.fft_result))
+                self.temparray1=self.fft_result.copy()
+
 
             elif currentTabindex == 2:
                 self.plotTimeDomain(self.animalTimeInputCanvas, self.xy_coordinates)
                 self.plotFrequencyDomain(self.animalFrequencyCanvas,self.frequencies,np.abs(self.fft_result))
-                self.plotSpectrogram( self.animalInputSpectrogramCanvas,yaxis,self.sample_rate)
+                self.temparray2=self.fft_result.copy()
 
             elif currentTabindex == 3:
                 self.plotTimeDomain(self.musicTimeInputCanvas, self.xy_coordinates)
                 self.plotFrequencyDomain(self.musicFrequencyCanvas,self.frequencies,np.abs(self.fft_result))
-                self.plotSpectrogram( self.musicInputSpectrogramCanvas,yaxis,self.sample_rate)
+                self.temparray3=self.fft_result.copy()
+
             elif currentTabindex == 4:
                 self.plotTimeDomain(self.ecgTimeInputCanvas, self.xy_coordinates)
                 self.plotFrequencyDomain(self.ecgFrequencyCanvas,self.frequencies,np.abs(self.fft_result))
-                self.plotSpectrogram( self.ecgInputSpectrogramCanvas,yaxis,self.sample_rate)
+                self.temparray4=self.fft_result.copy()
 
 
     def plotTimeDomain(self, canvas, xy_coordinates):
@@ -768,72 +771,97 @@ class Ui_MainWindow(object):
         #ax.grid(True)
         #canvas.draw()
 
+        
+
+    def uniformfrecuencyupdate(self,value,customrange):
+        max_frequency = np.max(self.frequencies)
+        sliderrange =int(max_frequency/10)
+        lower_bound = customrange * sliderrange
+        upper_bound = (customrange + 1) * sliderrange 
+
+        for i, frequency in enumerate(self.frequencies):
+
+                if lower_bound <= np.abs(frequency) <= upper_bound:
+                    self.temparray1[i] = self.fft_result[i].copy()
+                    self.temparray1[i] = self.temparray1[i]*(value / 10)
+
+        self.plotFrequencyDomain(self.unifromFrequencyCanvas,self.frequencies, np.abs(self.temparray1))  
+        self.add_shaded_region(self.unifromFrequencyCanvas, self.frequencies, np.abs(self.fft_result), np.abs(self.temparray1))  
+
     def plotFrequencyDomain(self, canvas,x,y):
 
         ax = canvas.figure.clear()
         ax = canvas.figure.add_subplot(111)
 
-
-        ax.plot(x,y)
+        ax.plot(np.abs(x),y)
         ax.set_title("Frequency Domain Plot")
         ax.set_xlabel("Frequency (Hz)")
         ax.set_ylabel("Amplitude")
         ax.grid(True)
         canvas.draw()
-
-    def musicfrequencycomp(self, value, range):
-        temparray = self.fft_result.copy()
-        if range == 1:
-            for i, frequency in enumerate(self.frequencies):
-                if (5000>frequency and frequency > 3000) or( frequency <-3000 and frequency>-5000):
-                    temparray[i] = (temparray[i])*(value/10)
-                    
-                    
-        elif range == 2:
-            for i, frequency in enumerate(self.frequencies):
-                if  (250>frequency and frequency > 60) or( frequency <-60 and frequency>-250):
-                    temparray[i] = (temparray[i])*(value/10)
-
-        elif range == 3:
-            for i, frequency in enumerate(self.frequencies):
-                if  (3500>frequency and frequency > 700) or( frequency <-70 and frequency>-3500):
-                    temparray[i] = (temparray[i])*(value/10)
-
-        elif range == 4:
-            for i, frequency in enumerate(self.frequencies):
-                if  (1000>frequency and frequency > 180) or( frequency <-180 and frequency>-1000):
-                    temparray[i] = (temparray[i])*(value/10)
-        self.plotFrequencyDomain(self.musicFrequencyCanvas,self.frequencies, np.abs(temparray))
-
-
+    
     def animalfrequencycomp(self, value, range):
 
-        temparray = self.fft_result.copy()
         if range == 1:
             for i, frequency in enumerate(self.frequencies):
-                if (2000>frequency and frequency > 1000) or(frequency <-2000 and frequency>-1000):
-                    temparray[i] = (temparray[i])*(value/10)
-                
+                if 5000>frequency and frequency > -5000:
+                    self.temparray2[i] = self.fft_result[i].copy()
+                    self.temparray2[i] = self.temparray2[i]*(value / 10)
+                    print(value)
                     
         elif range == 2:
             for i, frequency in enumerate(self.frequencies):
-                if (1000>frequency and frequency > 125) or(frequency <-125 and frequency>-1000):
-                    temparray[i] = (temparray[i])*(value/10)
+                if 5000>frequency and frequency > -5000:
+                    self.temparray2[i] = self.fft_result[i].copy()
+                    self.temparray2[i] = self.temparray2[i]*(value / 10)
 
         elif range == 3:
             for i, frequency in enumerate(self.frequencies):
-                if (4000>frequency and frequency > 1000) or(frequency <-1000 and frequency>-4000):
-                    temparray[i] = (temparray[i])*(value/10)
+                if -5000000000>frequency and frequency > -5000:
+                    self.temparray2[i] = self.fft_result[i].copy()
+                    self.temparray2[i] = self.temparray2[i]*(value / 10)
 
         elif range == 4:
             for i, frequency in enumerate(self.frequencies):
-                if (16000>frequency and frequency > 2000) or(frequency <-2000 and frequency>-16000):
-                    temparray[i] = (temparray[i])*(value/10)
-        self.plotFrequencyDomain(self.animalFrequencyCanvas,self.frequencies, np.abs(temparray))     
+                if -50000000000>frequency and frequency > -5000:
+                    self.temparray2[i] = self.fft_result[i].copy()
+                    self.temparray2[i] = self.temparray2[i]*(value / 10)
+
+        self.plotFrequencyDomain(self.animalFrequencyCanvas,self.frequencies, np.abs(self.temparray2))   
+        self.add_shaded_region(self.animalFrequencyCanvas, self.frequencies, np.abs(self.fft_result), np.abs(self.temparray2))      
 
 
-        output_time_domain_Y_coordinates=self.calcAndPlotIfft(temparray,self.animalTimeOutputCanvas,self.time_domain_X_coordinates)  
-        self.plotSpectrogram(self.animalOutputSpectrogramCanvas,output_time_domain_Y_coordinates,self.sample_rate)
+    def musicfrequencycomp(self, value, range):
+        for i, frequency in enumerate(self.frequencies):
+                if (
+                        (range == 1 and 5000 > frequency > -5000) or
+                        (range == 2 and (10000 > frequency > 5000 or 5000 > frequency > -5000)) or
+                        (range == 3 and (-5000 > frequency > -10000 or 10000 > frequency > 5000)) or
+                        (range == 4 and (20000 > frequency > 10000 or -10000 > frequency > -20000))
+                    ):
+                        self.temparray3[i] = self.fft_result[i].copy()
+                        self.temparray3[i] = self.temparray3[i]*(value / 10)
+            
+        self.plotFrequencyDomain(self.musicFrequencyCanvas,self.frequencies, np.abs(self.temparray3)) 
+        self.add_shaded_region(self.musicFrequencyCanvas, self.frequencies, np.abs(self.fft_result), np.abs(self.temparray3)) 
+    
+    def add_shaded_region(self, canvas, x_values, y_values_original, y_values_modified):
+        # Assuming canvas is a matplotlib axes
+        ax = canvas.figure.clear()
+        ax = canvas.figure.add_subplot(111)
+
+            # Plot the original data with a specific color
+        ax.plot(np.abs(x_values), y_values_original, label='Original Data', color='red')
+
+        # Plot the modified data with a different color
+        ax.plot(np.abs(x_values), y_values_modified, label='Modified Data', color='blue')
+
+        ax.set_title("Frequency Domain Plot with Shaded Region")
+        ax.set_xlabel("Frequency (Hz)")
+        ax.set_ylabel("Amplitude")
+        ax.legend()
+        ax.grid(True)
+        canvas.draw()
 
     def playPauseLoadedSound(self):
         if hasattr(self, 'file_path') and self.file_path:
@@ -850,36 +878,12 @@ class Ui_MainWindow(object):
             print("No file loaded.")
 
 
+
     def rewindLoadedSound(self):
         if hasattr(self, 'media_player'):
             self.media_player.setPosition(0)
         else:
             print("No file loaded.")
-
-
-    def calcAndPlotIfft(self,freq_mag,canvas,time):
-        #y=fft.ifft2(freq_mag)
-        y=np.fft.ifft(freq_mag)
-        y=y.astype(np.float32)
-        xy_coordinates = list(zip(time, y))
-        self.plotTimeDomain(canvas, xy_coordinates) 
-        self.convertToWavFile(y,self.sample_rate)
-        return y    
-
-    def plotSpectrogram(self, canvas,y,sr):
-        ax = canvas.figure.clear()
-        ax = canvas.figure.add_subplot(111)
-        hl = 512 # number of samples per time-step in spectrogram
-        hi = 128 # Height of image
-        wi = 384 # Width of image
-        window = y[0:wi*hl]
-        S = librosa.feature.melspectrogram(y=window, sr=sr, n_mels=hi, fmax=8000,hop_length=hl)
-        S_dB = librosa.power_to_db(S, ref=np.max)
-        img = librosa.display.specshow(S_dB, x_axis='time', y_axis='mel', sr=sr, fmax=8000, ax=ax)
-        canvas.draw()
-
-    def convertToWavFile(self,data,fs):
-        wavf.write("out.wav", fs, data)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -906,10 +910,10 @@ class Ui_MainWindow(object):
         self.zoomOutButton_2.setText(_translate("MainWindow", "Zoom Out"))
         self.pausePlayButton_2.setText(_translate("MainWindow", "Pause/Play"))
         self.rewindButton_2.setText(_translate("MainWindow", "Rewind"))
-        self.label_12.setText(_translate("MainWindow", "Eagle"))
-        self.label_13.setText(_translate("MainWindow", "Whale"))
-        self.label_15.setText(_translate("MainWindow", "Elephant"))
-        self.label_16.setText(_translate("MainWindow", "Bat"))
+        self.label_12.setText(_translate("MainWindow", "TextLabel"))
+        self.label_13.setText(_translate("MainWindow", "TextLabel"))
+        self.label_15.setText(_translate("MainWindow", "TextLabel"))
+        self.label_16.setText(_translate("MainWindow", "TextLabel"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.animalTab), _translate("MainWindow", "Animal Sounds"))
         self.zoomInButton_3.setText(_translate("MainWindow", "Zoom In"))
         self.zoomOutButton_3.setText(_translate("MainWindow", "Zoom Out"))
@@ -917,10 +921,10 @@ class Ui_MainWindow(object):
         self.rewindButton_3.setText(_translate("MainWindow", "Rewind"))
         self.label_14.setText(_translate("MainWindow", "Speed"))
         self.checkBox_3.setText(_translate("MainWindow", "Hide Spectrogram"))
-        self.label_18.setText(_translate("MainWindow", "Cymbal"))
-        self.label_20.setText(_translate("MainWindow", "Kick drum"))
-        self.label_21.setText(_translate("MainWindow", "Xylophone"))
-        self.label_22.setText(_translate("MainWindow", "Accordion"))
+        self.label_18.setText(_translate("MainWindow", "TextLabel"))
+        self.label_20.setText(_translate("MainWindow", "TextLabel"))
+        self.label_21.setText(_translate("MainWindow", "TextLabel"))
+        self.label_22.setText(_translate("MainWindow", "TextLabel"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.musicTab),
                                   _translate("MainWindow", "Musical Instruments"))
         self.zoomInButton_4.setText(_translate("MainWindow", "Zoom In"))
