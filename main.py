@@ -9,6 +9,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import librosa as librosa
 from scipy.fft import fft
 from cine_canvas import MplCanvas
+import scipy.io.wavfile as wavf
 # Increase the threshold for the warning
 plt.rcParams['figure.max_open_warning'] = 50  # Set it to a value higher than 20
 
@@ -527,25 +528,25 @@ class Ui_MainWindow(object):
         self.smoothingWindowCanvas = FigureCanvas(plt.figure(figsize=(4, 3)))
 
         self.unifromTimeInputCanvas = MplCanvas(MainWindow,1,1)
-        self.unifromTimeOutputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
+        self.unifromTimeOutputCanvas = MplCanvas(MainWindow,1,1)
         self.unifromFrequencyCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.unifromInputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.unifromOutputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
 
         self.animalTimeInputCanvas = MplCanvas(MainWindow,1,1)
-        self.animalTimeOutputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
+        self.animalTimeOutputCanvas = MplCanvas(MainWindow,1,1)
         self.animalFrequencyCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.animalInputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.animalOutputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
 
         self.musicTimeInputCanvas =  MplCanvas(MainWindow,1,1)
-        self.musicTimeOutputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
+        self.musicTimeOutputCanvas = MplCanvas(MainWindow,1,1)
         self.musicFrequencyCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.musicInputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.musicOutputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
 
         self.ecgTimeInputCanvas = MplCanvas(MainWindow,1,1)
-        self.ecgTimeOutputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
+        self.ecgTimeOutputCanvas = MplCanvas(MainWindow,1,1)
         self.ecgFrequencyCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.ecgInputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.ecgOutputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
@@ -610,25 +611,25 @@ class Ui_MainWindow(object):
         self.smoothingWindowCanvas.draw()
 
         #self.unifromTimeInputCanvas.figure.add_subplot(111)
-        self.unifromTimeOutputCanvas.figure.add_subplot(111)
+        #self.unifromTimeOutputCanvas.figure.add_subplot(111)
         self.unifromFrequencyCanvas.figure.add_subplot(111)
         self.unifromInputSpectrogramCanvas.figure.add_subplot(111)
         self.unifromOutputSpectrogramCanvas.figure.add_subplot(111)
 
         #self.animalTimeInputCanvas.figure.add_subplot(111)
-        self.animalTimeOutputCanvas.figure.add_subplot(111)
+        #self.animalTimeOutputCanvas.figure.add_subplot(111)
         self.animalFrequencyCanvas.figure.add_subplot(111)
         self.animalInputSpectrogramCanvas.figure.add_subplot(111)
         self.animalOutputSpectrogramCanvas.figure.add_subplot(111)
 
         #self.musicTimeInputCanvas.figure.add_subplot(111)
-        self.musicTimeOutputCanvas.figure.add_subplot(111)
+        #self.musicTimeOutputCanvas.figure.add_subplot(111)
         self.musicFrequencyCanvas.figure.add_subplot(111)
         self.musicInputSpectrogramCanvas.figure.add_subplot(111)
         self.musicOutputSpectrogramCanvas.figure.add_subplot(111)
 
         #self.ecgTimeInputCanvas.figure.add_subplot(111)
-        self.ecgTimeOutputCanvas.figure.add_subplot(111)
+        #self.ecgTimeOutputCanvas.figure.add_subplot(111)
         self.ecgFrequencyCanvas.figure.add_subplot(111)
         self.ecgInputSpectrogramCanvas.figure.add_subplot(111)
         self.ecgOutputSpectrogramCanvas.figure.add_subplot(111)
@@ -736,22 +737,26 @@ class Ui_MainWindow(object):
                 self.plotTimeDomain(self.unifromTimeInputCanvas,self.xy_coordinates)
                 self.plotFrequencyDomain(self.unifromFrequencyCanvas,self.frequencies,np.abs(self.fft_result))
                 self.temparray1=self.fft_result.copy()
-
+                self. plotSpectrogram( self.unifromInputSpectrogramCanvas,yaxis,self.sample_rate)
 
             elif currentTabindex == 2:
                 self.plotTimeDomain(self.animalTimeInputCanvas, self.xy_coordinates)
                 self.plotFrequencyDomain(self.animalFrequencyCanvas,self.frequencies,np.abs(self.fft_result))
                 self.temparray2=self.fft_result.copy()
+                self. plotSpectrogram( self.animalInputSpectrogramCanvas,yaxis,self.sample_rate)
+
 
             elif currentTabindex == 3:
                 self.plotTimeDomain(self.musicTimeInputCanvas, self.xy_coordinates)
                 self.plotFrequencyDomain(self.musicFrequencyCanvas,self.frequencies,np.abs(self.fft_result))
                 self.temparray3=self.fft_result.copy()
+                self. plotSpectrogram( self.musicInputSpectrogramCanvas,yaxis,self.sample_rate)
 
             elif currentTabindex == 4:
                 self.plotTimeDomain(self.ecgTimeInputCanvas, self.xy_coordinates)
                 self.plotFrequencyDomain(self.ecgFrequencyCanvas,self.frequencies,np.abs(self.fft_result))
                 self.temparray4=self.fft_result.copy()
+                self. plotSpectrogram( self.ecgInputSpectrogramCanvas,yaxis,self.sample_rate)
 
 
     def plotTimeDomain(self, canvas, xy_coordinates):
@@ -827,7 +832,11 @@ class Ui_MainWindow(object):
                     self.temparray2[i] = self.temparray2[i]*(value / 10)
 
         self.plotFrequencyDomain(self.animalFrequencyCanvas,self.frequencies, np.abs(self.temparray2))   
-        self.add_shaded_region(self.animalFrequencyCanvas, self.frequencies, np.abs(self.fft_result), np.abs(self.temparray2))      
+        self.add_shaded_region(self.animalFrequencyCanvas, self.frequencies, np.abs(self.fft_result), np.abs(self.temparray2))   
+
+        self.plotFrequencyDomain(self.animalFrequencyCanvas,self.frequencies, np.abs(self.temparray2))     
+        output_time_domain_Y_coordinates=self.calcAndPlotIfft(self.temparray2,self.animalTimeOutputCanvas,self.time_domain_X_coordinates)  
+        self.plotSpectrogram(self.animalOutputSpectrogramCanvas,output_time_domain_Y_coordinates,self.sample_rate)     
 
 
     def musicfrequencycomp(self, value, range):
@@ -843,6 +852,8 @@ class Ui_MainWindow(object):
             
         self.plotFrequencyDomain(self.musicFrequencyCanvas,self.frequencies, np.abs(self.temparray3)) 
         self.add_shaded_region(self.musicFrequencyCanvas, self.frequencies, np.abs(self.fft_result), np.abs(self.temparray3)) 
+        output_time_domain_Y_coordinates=self.calcAndPlotIfft(self.temparray3,self.musicTimeOutputCanvas,self.time_domain_X_coordinates)  
+        self.plotSpectrogram(self.musicOutputSpectrogramCanvas,output_time_domain_Y_coordinates,self.sample_rate)   
     
     def add_shaded_region(self, canvas, x_values, y_values_original, y_values_modified):
         # Assuming canvas is a matplotlib axes
@@ -875,6 +886,31 @@ class Ui_MainWindow(object):
                 self.media_player.play()
         else:
             print("No file loaded.")
+
+
+    def calcAndPlotIfft(self,freq_mag,canvas,time):
+        #y=fft.ifft2(freq_mag)
+        y=np.fft.ifft(freq_mag)
+        y=y.astype(np.float32)
+        xy_coordinates = list(zip(time, y))
+        self.plotTimeDomain(canvas, xy_coordinates) 
+        self.convertToWavFile(y,self.sample_rate)
+        return y
+
+    def  plotSpectrogram(self, canvas,y,sr):
+        ax = canvas.figure.clear()
+        ax = canvas.figure.add_subplot(111)
+        hl = 512 # number of samples per time-step in spectrogram
+        hi = 128 # Height of image
+        wi = 384 # Width of image
+        window = y[0:wi*hl]
+        S = librosa.feature.melspectrogram(y=window, sr=sr, n_mels=hi, fmax=8000,hop_length=hl)
+        S_dB = librosa.power_to_db(S, ref=np.max)
+        img = librosa.display.specshow(S_dB, x_axis='time', y_axis='mel', sr=sr, fmax=8000, ax=ax)
+        canvas.draw()
+
+    def convertToWavFile(self,data,fs):
+        wavf.write("out.wav", fs, data)
 
 
 
