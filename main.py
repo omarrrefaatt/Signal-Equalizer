@@ -727,6 +727,7 @@ class Ui_MainWindow(object):
             elif currentTabindex == 2:
                 self.plotTimeDomain(self.animalTimeInputCanvas, self.xy_coordinates)
                 self.plotFrequencyDomain(self.animalFrequencyCanvas,self.frequencies,np.abs(self.fft_result))
+                self.plotInputSpectrogram( self.animalInputSpectrogramCanvas,yaxis,self.sample_rate)
 
             elif currentTabindex == 3:
                 self.plotTimeDomain(self.musicTimeInputCanvas, self.xy_coordinates)
@@ -811,6 +812,19 @@ class Ui_MainWindow(object):
             self.media_player.setPosition(0)
         else:
             print("No file loaded.")
+
+
+    def plotInputSpectrogram(self, canvas,y,sr):
+        ax = canvas.figure.clear()
+        ax = canvas.figure.add_subplot(111)
+        hl = 512 # number of samples per time-step in spectrogram
+        hi = 128 # Height of image
+        wi = 384 # Width of image
+        window = y[0:wi*hl]
+        S = librosa.feature.melspectrogram(y=window, sr=sr, n_mels=hi, fmax=8000,hop_length=hl)
+        S_dB = librosa.power_to_db(S, ref=np.max)
+        img = librosa.display.specshow(S_dB, x_axis='time', y_axis='mel', sr=sr, fmax=8000, ax=ax)
+        canvas.draw()
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
