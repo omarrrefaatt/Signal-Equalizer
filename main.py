@@ -739,16 +739,16 @@ class Ui_MainWindow(object):
             elif currentTabindex == 2:
                 self.plotTimeDomain(self.animalTimeInputCanvas, self.xy_coordinates)
                 self.plotFrequencyDomain(self.animalFrequencyCanvas,self.frequencies,np.abs(self.fft_result))
-                self.plotInputSpectrogram( self.animalInputSpectrogramCanvas,yaxis,self.sample_rate)
+                self.plotSpectrogram( self.animalInputSpectrogramCanvas,yaxis,self.sample_rate)
 
             elif currentTabindex == 3:
                 self.plotTimeDomain(self.musicTimeInputCanvas, self.xy_coordinates)
                 self.plotFrequencyDomain(self.musicFrequencyCanvas,self.frequencies,np.abs(self.fft_result))
-                self.plotInputSpectrogram( self.musicInputSpectrogramCanvas,yaxis,self.sample_rate)
+                self.plotSpectrogram( self.musicInputSpectrogramCanvas,yaxis,self.sample_rate)
             elif currentTabindex == 4:
                 self.plotTimeDomain(self.ecgTimeInputCanvas, self.xy_coordinates)
                 self.plotFrequencyDomain(self.ecgFrequencyCanvas,self.frequencies,np.abs(self.fft_result))
-                self.plotInputSpectrogram( self.ecgInputSpectrogramCanvas,yaxis,self.sample_rate)
+                self.plotSpectrogram( self.ecgInputSpectrogramCanvas,yaxis,self.sample_rate)
 
 
     def plotTimeDomain(self, canvas, xy_coordinates):
@@ -861,7 +861,7 @@ class Ui_MainWindow(object):
         xy_coordinates = list(zip(time, y))
         self.plotTimeDomain(canvas, xy_coordinates)     
 
-    def plotInputSpectrogram(self, canvas,y,sr):
+    def plotSpectrogram(self, canvas,y,sr):
         ax = canvas.figure.clear()
         ax = canvas.figure.add_subplot(111)
         hl = 512 # number of samples per time-step in spectrogram
