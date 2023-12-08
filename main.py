@@ -555,16 +555,16 @@ class Ui_MainWindow(object):
 
         self.animalSlider_1.setRange(0,10)
         self.animalSlider_1.setValue(10)
-        self.animalSlider_1.valueChanged.connect(lambda value, range=1: self.changeyfrequencycomp(value, range))
+        self.animalSlider_1.valueChanged.connect(lambda value, range=1: self.animalfrequencycomp(value, range))
         self.animalSlider_2.setRange(0,10)
         self.animalSlider_2.setValue(10)
-        self.animalSlider_2.valueChanged.connect(lambda value, range=2: self.changeyfrequencycomp(value, range))
+        self.animalSlider_2.valueChanged.connect(lambda value, range=2: self.animalfrequencycomp(value, range))
         self.animalSlider_3.setRange(0,10)
         self.animalSlider_3.setValue(10)
-        self.animalSlider_3.valueChanged.connect(lambda value, range=3: self.changeyfrequencycomp(value, range))
+        self.animalSlider_3.valueChanged.connect(lambda value, range=3: self.animalfrequencycomp(value, range))
         self.animalSlider_4.setRange(0,10)
         self.animalSlider_4.setValue(10)
-        self.animalSlider_4.valueChanged.connect(lambda value, range=4: self.changeyfrequencycomp(value, range))
+        self.animalSlider_4.valueChanged.connect(lambda value, range=4: self.animalfrequencycomp(value, range))
 
 
         self.actionOpen.triggered.connect(self.loadWavFile)  # Connect to loadWavFile method
@@ -726,7 +726,7 @@ class Ui_MainWindow(object):
 
             elif currentTabindex == 2:
                 self.plotTimeDomain(self.animalTimeInputCanvas, self.xy_coordinates)
-                self.plotFrequencyDomain(self.animalFrequencyCanvas,self.frequencies,self.fft_result)
+                self.plotFrequencyDomain(self.animalFrequencyCanvas,self.frequencies,np.abs(self.fft_result))
 
             elif currentTabindex == 3:
                 self.plotTimeDomain(self.musicTimeInputCanvas, self.xy_coordinates)
@@ -759,26 +759,37 @@ class Ui_MainWindow(object):
         ax = canvas.figure.add_subplot(111)
 
 
-        ax.plot(np.abs(x), np.abs(y))
+        ax.plot(x,y)
         ax.set_title("Frequency Domain Plot")
         ax.set_xlabel("Frequency (Hz)")
         ax.set_ylabel("Amplitude")
         ax.grid(True)
         canvas.draw()
     
-    def changeyfrequencycomp(self, value, custom_range):
-        self.temparray = self.fft_result
-        for i, frequency in enumerate(abs(self.frequencies)):
-            if custom_range == 1 and  frequency < 5000:
-                self.temparray[i] = self.fft_result[i]*(value / 10)
-            elif custom_range == 2 and 5000 < frequency < 10000:
-                self.temparray[i] = self.fft_result[i] * (value / 10)
-            elif custom_range == 3 and 10000 < frequency < 15000:
-                self.temparray[i] = self.fft_result[i] * (value / 10)
-            elif custom_range == 4 and 15000 < frequency < 20000:
-                self.temparray[i] = self.fft_result[i] * (value / 10)
-            
-            self.plotFrequencyDomain(self.animalFrequencyCanvas,self.frequencies,self.temparray)        
+    def animalfrequencycomp(self, value, range):
+
+        temparray = self.fft_result.copy()
+        if range == 1:
+            for i, frequency in enumerate(self.frequencies):
+                if 5000>frequency and frequency > -5000:
+                    temparray[i] = (temparray[i])*(value/10)
+                    print(value)
+                    
+        elif range == 2:
+            for i, frequency in enumerate(self.frequencies):
+                if 5000>frequency and frequency > -5000:
+                    temparray[i] = (temparray[i])*(value/10)
+
+        elif range == 3:
+            for i, frequency in enumerate(self.frequencies):
+                if -5000000000>frequency and frequency > -5000:
+                    temparray[i] = (temparray[i])*(value/10)
+
+        elif range == 4:
+            for i, frequency in enumerate(self.frequencies):
+                if -50000000000>frequency and frequency > -5000:
+                    temparray[i] = (temparray[i])*(value/10)
+        self.plotFrequencyDomain(self.animalFrequencyCanvas,self.frequencies, np.abs(temparray))        
 
     def playPauseLoadedSound(self):
         if hasattr(self, 'file_path') and self.file_path:
