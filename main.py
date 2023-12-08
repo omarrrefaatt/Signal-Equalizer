@@ -831,7 +831,8 @@ class Ui_MainWindow(object):
         self.plotFrequencyDomain(self.animalFrequencyCanvas,self.frequencies, np.abs(temparray))     
 
 
-        self.calcAndPlotIfft(temparray,self.animalTimeOutputCanvas,self.time_domain_X_coordinates)   
+        output_time_domain_Y_coordinates=self.calcAndPlotIfft(temparray,self.animalTimeOutputCanvas,self.time_domain_X_coordinates)  
+        #self.plotSpectrogram(self.animalOutputSpectrogramCanvas,output_time_domain_Y_coordinates,self.sample_rate)
 
     def playPauseLoadedSound(self):
         if hasattr(self, 'file_path') and self.file_path:
@@ -859,7 +860,8 @@ class Ui_MainWindow(object):
         #y=fft.ifft2(freq_mag)
         y=np.fft.ifft(freq_mag)
         xy_coordinates = list(zip(time, y))
-        self.plotTimeDomain(canvas, xy_coordinates)     
+        self.plotTimeDomain(canvas, xy_coordinates) 
+        return y    
 
     def plotSpectrogram(self, canvas,y,sr):
         ax = canvas.figure.clear()
