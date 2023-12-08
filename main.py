@@ -9,6 +9,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import librosa as librosa
 from scipy.fft import fft
 from cine_canvas import MplCanvas
+import scipy.io.wavfile as wavf
 # Increase the threshold for the warning
 plt.rcParams['figure.max_open_warning'] = 50  # Set it to a value higher than 20
 
@@ -862,6 +863,7 @@ class Ui_MainWindow(object):
         y=y.astype(np.float32)
         xy_coordinates = list(zip(time, y))
         self.plotTimeDomain(canvas, xy_coordinates) 
+        self.convertToWavFile(y,self.sample_rate)
         return y    
 
     def plotSpectrogram(self, canvas,y,sr):
@@ -875,6 +877,9 @@ class Ui_MainWindow(object):
         S_dB = librosa.power_to_db(S, ref=np.max)
         img = librosa.display.specshow(S_dB, x_axis='time', y_axis='mel', sr=sr, fmax=8000, ax=ax)
         canvas.draw()
+
+    def convertToWavFile(self,data,fs):
+        wavf.write("out.wav", fs, data)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
