@@ -681,7 +681,6 @@ class Ui_MainWindow(object):
             center = 50
             window = np.exp(-(np.arange(100) - center) ** 2 / (2 * self.sigma ** 2))
         # Add more conditions for other window types if needed
-
         ax.plot(window)
         ax.set_title(f"{window_type} Window")
         ax.set_xlabel("Sample")
