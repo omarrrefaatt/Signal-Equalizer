@@ -527,25 +527,25 @@ class Ui_MainWindow(object):
         self.smoothingWindowCanvas = FigureCanvas(plt.figure(figsize=(4, 3)))
 
         self.unifromTimeInputCanvas = MplCanvas(MainWindow,1,1)
-        self.unifromTimeOutputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
+        self.unifromTimeOutputCanvas = MplCanvas(MainWindow,1,1)
         self.unifromFrequencyCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.unifromInputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.unifromOutputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
 
         self.animalTimeInputCanvas = MplCanvas(MainWindow,1,1)
-        self.animalTimeOutputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
+        self.animalTimeOutputCanvas = MplCanvas(MainWindow,1,1)
         self.animalFrequencyCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.animalInputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.animalOutputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
 
         self.musicTimeInputCanvas =  MplCanvas(MainWindow,1,1)
-        self.musicTimeOutputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
+        self.musicTimeOutputCanvas = MplCanvas(MainWindow,1,1)
         self.musicFrequencyCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.musicInputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.musicOutputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
 
         self.ecgTimeInputCanvas = MplCanvas(MainWindow,1,1)
-        self.ecgTimeOutputCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
+        self.ecgTimeOutputCanvas = MplCanvas(MainWindow,1,1)
         self.ecgFrequencyCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.ecgInputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.ecgOutputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
@@ -609,25 +609,25 @@ class Ui_MainWindow(object):
         self.smoothingWindowCanvas.draw()
 
         #self.unifromTimeInputCanvas.figure.add_subplot(111)
-        self.unifromTimeOutputCanvas.figure.add_subplot(111)
+        #self.unifromTimeOutputCanvas.figure.add_subplot(111)
         self.unifromFrequencyCanvas.figure.add_subplot(111)
         self.unifromInputSpectrogramCanvas.figure.add_subplot(111)
         self.unifromOutputSpectrogramCanvas.figure.add_subplot(111)
 
         #self.animalTimeInputCanvas.figure.add_subplot(111)
-        self.animalTimeOutputCanvas.figure.add_subplot(111)
+        #self.animalTimeOutputCanvas.figure.add_subplot(111)
         self.animalFrequencyCanvas.figure.add_subplot(111)
         self.animalInputSpectrogramCanvas.figure.add_subplot(111)
         self.animalOutputSpectrogramCanvas.figure.add_subplot(111)
 
         #self.musicTimeInputCanvas.figure.add_subplot(111)
-        self.musicTimeOutputCanvas.figure.add_subplot(111)
+        #self.musicTimeOutputCanvas.figure.add_subplot(111)
         self.musicFrequencyCanvas.figure.add_subplot(111)
         self.musicInputSpectrogramCanvas.figure.add_subplot(111)
         self.musicOutputSpectrogramCanvas.figure.add_subplot(111)
 
         #self.ecgTimeInputCanvas.figure.add_subplot(111)
-        self.ecgTimeOutputCanvas.figure.add_subplot(111)
+        #self.ecgTimeOutputCanvas.figure.add_subplot(111)
         self.ecgFrequencyCanvas.figure.add_subplot(111)
         self.ecgInputSpectrogramCanvas.figure.add_subplot(111)
         self.ecgOutputSpectrogramCanvas.figure.add_subplot(111)
@@ -828,7 +828,10 @@ class Ui_MainWindow(object):
             for i, frequency in enumerate(self.frequencies):
                 if (16000>frequency and frequency > 2000) or(frequency <-2000 and frequency>-16000):
                     temparray[i] = (temparray[i])*(value/10)
-        self.plotFrequencyDomain(self.animalFrequencyCanvas,self.frequencies, np.abs(temparray))        
+        self.plotFrequencyDomain(self.animalFrequencyCanvas,self.frequencies, np.abs(temparray))     
+
+
+        self.calcAndPlotIfft(temparray,self.animalTimeOutputCanvas,self.time_domain_X_coordinates)   
 
     def playPauseLoadedSound(self):
         if hasattr(self, 'file_path') and self.file_path:
@@ -851,6 +854,12 @@ class Ui_MainWindow(object):
         else:
             print("No file loaded.")
 
+
+    def calcAndPlotIfft(self,freq_mag,canvas,time):
+        #y=fft.ifft2(freq_mag)
+        y=np.fft.ifft(freq_mag)
+        xy_coordinates = list(zip(time, y))
+        self.plotTimeDomain(canvas, xy_coordinates)     
 
     def plotInputSpectrogram(self, canvas,y,sr):
         ax = canvas.figure.clear()
