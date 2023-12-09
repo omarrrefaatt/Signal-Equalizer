@@ -584,6 +584,14 @@ class Ui_MainWindow(object):
                 slider_instance3.setValue(10)
                 slider_instance3.valueChanged.connect(lambda value, range=i: self.musicfrequencycomp(value, range))
 
+        for i in range(1, 5):
+            slider_name4 = f"ecgSlider_{i}"
+            slider_instance4 = getattr(self, slider_name4, None)
+            if slider_instance4 is not None:
+                slider_instance4.setRange(0,10)
+                slider_instance4.setValue(10)
+                slider_instance4.valueChanged.connect(lambda value, range=i: self.ecgfrequencycomp(value, range))
+
 
 
         self.actionOpen.triggered.connect(self.loadFile)  # Connect to loadWavFile method
@@ -839,30 +847,15 @@ class Ui_MainWindow(object):
     
     def animalfrequencycomp(self, value, range):
 
-        if range == 1:
-            for i, frequency in enumerate(self.frequencies):
-                if 4000>np.abs(frequency) and np.abs(frequency) > 1000:
-                    self.temparray2[i] = self.fft_result[i].copy()
-                    self.temparray2[i] = self.temparray2[i]*(value / 10)
-                    print(value)
-                    
-        elif range == 2:
-            for i, frequency in enumerate(self.frequencies):
-                if 1000>np.abs(frequency) and np.abs(frequency) > 125:
-                    self.temparray2[i] = self.fft_result[i].copy()
-                    self.temparray2[i] = self.temparray2[i]*(value / 10)
-
-        elif range == 3:
-            for i, frequency in enumerate(self.frequencies):
-                if 2000>np.abs(frequency) and np.abs(frequency) > 1000:
-                    self.temparray2[i] = self.fft_result[i].copy()
-                    self.temparray2[i] = self.temparray2[i]*(value / 10)
-
-        elif range == 4:
-            for i, frequency in enumerate(self.frequencies):
-                if 16000>np.abs(frequency) and np.abs(frequency) > 2000:
-                    self.temparray2[i] = self.fft_result[i].copy()
-                    self.temparray2[i] = self.temparray2[i]*(value / 10)
+        for i, frequency in enumerate(self.frequencies):
+                if (
+                        (range == 1 and 4000 > np.abs(frequency) > 1000) or
+                        (range == 2 and (1000 > np.abs(frequency) > 125)) or
+                        (range == 3 and (2000 >np.abs(frequency) > 1000)) or
+                        (range == 4 and (16000 > np.abs(frequency) > 2000))
+                    ):
+                        self.temparray2[i] = self.fft_result[i].copy()
+                        self.temparray2[i] = self.temparray2[i]*(value / 10)
 
         self.plotFrequencyDomain(self.animalFrequencyCanvas,self.frequencies, np.abs(self.temparray2))   
         self.add_shaded_region(self.animalFrequencyCanvas, self.frequencies, np.abs(self.fft_result), np.abs(self.temparray2))   
@@ -885,19 +878,37 @@ class Ui_MainWindow(object):
         self.plotFrequencyDomain(self.musicFrequencyCanvas,self.frequencies, np.abs(self.temparray3)) 
         self.add_shaded_region(self.musicFrequencyCanvas, self.frequencies, np.abs(self.fft_result), np.abs(self.temparray3)) 
         output_time_domain_Y_coordinates=self.calcAndPlotIfft(self.temparray3,self.musicTimeOutputCanvas,self.time_domain_X_coordinates,self.musicTimeInputCanvas)  
-        self.plotSpectrogram(self.musicOutputSpectrogramCanvas,output_time_domain_Y_coordinates,self.sample_rate)   
+        self.plotSpectrogram(self.musicOutputSpectrogramCanvas,output_time_domain_Y_coordinates,self.sample_rate)
+
+    def ecgfrequencycomp(self, value, range):
+        for i, frequency in enumerate(self.frequencies):
+                if (
+                        (range == 1 and 10 > np.abs(frequency) > 1) or
+                        (range == 2 and (30 > np.abs(frequency) > 20)) or
+                        (range == 3 and (35 >np.abs(frequency) > 30)) or
+                        (range == 4 and (40 > np.abs(frequency) > 35))
+                    ):
+                        self.temparray4[i] = self.fft_result[i].copy()
+                        self.temparray4[i] = self.temparray4[i]*(value / 10)
+            
+        self.plotFrequencyDomain(self.ecgFrequencyCanvas,self.frequencies, np.abs(self.temparray4)) 
+        #self.add_shaded_region(self.ecgFrequencyCanvas, self.frequencies, np.abs(self.fft_result), np.abs(self.temparray4)) 
+        output_time_domain_Y_coordinates=self.calcAndPlotIfft(self.temparray4,self.ecgTimeOutputCanvas,self.time_domain_X_coordinates,self.ecgTimeInputCanvas)  
+        self.plotSpectrogram(self.ecgOutputSpectrogramCanvas,output_time_domain_Y_coordinates,self.sample_rate)   
     
     def add_shaded_region(self, canvas, x_values, y_values_original, y_values_modified):
         # Assuming canvas is a matplotlib axes
         ax = canvas.figure.clear()
+        print("haha")
         ax = canvas.figure.add_subplot(111)
-
-            # Plot the original data with a specific color
+        if canvas == self.ecgFrequencyCanvas:
+                    ax.set_xlim(0, 40)
+                    ax.set_ylim(0,20000)
+        # Plot the original data with a specific color
         ax.plot(np.abs(x_values), y_values_original, label='Original Data', color='red')
 
         # Plot the modified data with a different color
         ax.plot(np.abs(x_values), y_values_modified, label='Modified Data', color='blue')
-
         ax.set_title("Frequency Domain Plot with Shaded Region")
         ax.set_xlabel("Frequency (Hz)")
         ax.set_ylabel("Amplitude")
@@ -918,7 +929,6 @@ class Ui_MainWindow(object):
                 self.media_player.play()
         else:
             print("No file loaded.")
-
 
     def calcAndPlotIfft(self,freq_mag,canvas,time,input_canvas):
         #y=fft.ifft2(freq_mag)
@@ -944,8 +954,6 @@ class Ui_MainWindow(object):
 
     def convertToWavFile(self,data,fs):
         wavf.write("out.wav", fs, data)
-
-
 
     def rewindLoadedSound(self):
         if hasattr(self, 'media_player'):
