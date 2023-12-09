@@ -1,6 +1,7 @@
 
 import sys
 import numpy as np
+import wfdb
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.QtWidgets import QFileDialog, QPushButton
@@ -610,26 +611,18 @@ class Ui_MainWindow(object):
         ax.grid(True)
         self.smoothingWindowCanvas.draw()
 
-        #self.unifromTimeInputCanvas.figure.add_subplot(111)
-        #self.unifromTimeOutputCanvas.figure.add_subplot(111)
         self.unifromFrequencyCanvas.figure.add_subplot(111)
         self.unifromInputSpectrogramCanvas.figure.add_subplot(111)
         self.unifromOutputSpectrogramCanvas.figure.add_subplot(111)
 
-        #self.animalTimeInputCanvas.figure.add_subplot(111)
-        #self.animalTimeOutputCanvas.figure.add_subplot(111)
         self.animalFrequencyCanvas.figure.add_subplot(111)
         self.animalInputSpectrogramCanvas.figure.add_subplot(111)
         self.animalOutputSpectrogramCanvas.figure.add_subplot(111)
 
-        #self.musicTimeInputCanvas.figure.add_subplot(111)
-        #self.musicTimeOutputCanvas.figure.add_subplot(111)
         self.musicFrequencyCanvas.figure.add_subplot(111)
         self.musicInputSpectrogramCanvas.figure.add_subplot(111)
         self.musicOutputSpectrogramCanvas.figure.add_subplot(111)
 
-        #self.ecgTimeInputCanvas.figure.add_subplot(111)
-        #self.ecgTimeOutputCanvas.figure.add_subplot(111)
         self.ecgFrequencyCanvas.figure.add_subplot(111)
         self.ecgInputSpectrogramCanvas.figure.add_subplot(111)
         self.ecgOutputSpectrogramCanvas.figure.add_subplot(111)
@@ -696,84 +689,103 @@ class Ui_MainWindow(object):
         self.chooseSmoothingWindow()
 
     def loadWavFile(self):
+
+        #check current tab
+        currentTabindex=self.tabWidget.currentIndex()
+
+        if currentTabindex == 1 or currentTabindex == 2 or currentTabindex == 3:    
         # Open a file dialog and get the selected file name
-        fileName, _ = QFileDialog.getOpenFileName(
-            None, "Load WAV File", "", "WAV Files (*.wav);;All Files (*)"
-        )
+            fileName, _ = QFileDialog.getOpenFileName(
+                None, "Load WAV File", "", "WAV Files (*.wav);;All Files (*)"
+            )
 
-        if fileName:
-            self.file_path = fileName  # Store the file path
-            self.media_player = QMediaPlayer()
+            if fileName:
+                self.file_path = fileName  # Store the file path
+                self.media_player = QMediaPlayer()
 
-            # Create a QUrl from the file name
-            url = QtCore.QUrl.fromLocalFile(fileName)
+                # Create a QUrl from the file name
+                url = QtCore.QUrl.fromLocalFile(fileName)
 
-            # Create QMediaContent from the QUrl
-            content = QMediaContent(url)
+                # Create QMediaContent from the QUrl
+                content = QMediaContent(url)
 
-            # Set the media content for the media player
-            self.media_player.setMedia(content)
+                # Set the media content for the media player
+                self.media_player.setMedia(content)
 
-            # Reading file data
-            yaxis, self.sample_rate = librosa.load(self.file_path)
+                # Reading file data
+                yaxis, self.sample_rate = librosa.load(self.file_path)
 
-            # Time domain coordinates
-            self.time_domain_X_coordinates = np.arange(len(yaxis)) / self.sample_rate
-            self.time_domain_Y_coordinates = yaxis
+                # Time domain coordinates
+                self.time_domain_X_coordinates = np.arange(len(yaxis)) / self.sample_rate
+                self.time_domain_Y_coordinates = yaxis
 
-            # Store x and y coordinates as a list of tuples
-            self.xy_coordinates = list(zip(self.time_domain_X_coordinates, self.time_domain_Y_coordinates))
+                # Store x and y coordinates as a list of tuples
+                self.xy_coordinates = list(zip(self.time_domain_X_coordinates, self.time_domain_Y_coordinates))
 
-            # FFT coordinates
-            self.fft_result = fft(self.time_domain_Y_coordinates)
-            self.frequencies = np.fft.fftfreq(len(self.fft_result), 1 / self.sample_rate)
+                # FFT coordinates
+                self.fft_result = fft(self.time_domain_Y_coordinates)
+                self.frequencies = np.fft.fftfreq(len(self.fft_result), 1 / self.sample_rate)
 
-            #check current tab
-            currentTabindex=self.tabWidget.currentIndex()
+                #check current tab
+                currentTabindex=self.tabWidget.currentIndex()
             
         
 
-            if currentTabindex == 1:
-                self.plotTimeDomain(self.unifromTimeInputCanvas,self.xy_coordinates)
-                self.plotFrequencyDomain(self.unifromFrequencyCanvas,self.frequencies,np.abs(self.fft_result))
-                self.temparray1=self.fft_result.copy()
-                self. plotSpectrogram( self.unifromInputSpectrogramCanvas,yaxis,self.sample_rate)
+                if currentTabindex == 1:
+                    self.plotTimeDomain(self.unifromTimeInputCanvas,self.xy_coordinates)
+                    self.plotFrequencyDomain(self.unifromFrequencyCanvas,self.frequencies,np.abs(self.fft_result))
+                    self.temparray1=self.fft_result.copy()
+                    self. plotSpectrogram( self.unifromInputSpectrogramCanvas,yaxis,self.sample_rate)
 
-            elif currentTabindex == 2:
-                self.plotTimeDomain(self.animalTimeInputCanvas, self.xy_coordinates)
-                self.plotFrequencyDomain(self.animalFrequencyCanvas,self.frequencies,np.abs(self.fft_result))
-                self.temparray2=self.fft_result.copy()
-                self. plotSpectrogram( self.animalInputSpectrogramCanvas,yaxis,self.sample_rate)
+                elif currentTabindex == 2:
+                    self.plotTimeDomain(self.animalTimeInputCanvas, self.xy_coordinates)
+                    self.plotFrequencyDomain(self.animalFrequencyCanvas,self.frequencies,np.abs(self.fft_result))
+                    self.temparray2=self.fft_result.copy()
+                    self. plotSpectrogram( self.animalInputSpectrogramCanvas,yaxis,self.sample_rate)
 
 
-            elif currentTabindex == 3:
-                self.plotTimeDomain(self.musicTimeInputCanvas, self.xy_coordinates)
-                self.plotFrequencyDomain(self.musicFrequencyCanvas,self.frequencies,np.abs(self.fft_result))
-                self.temparray3=self.fft_result.copy()
-                self. plotSpectrogram( self.musicInputSpectrogramCanvas,yaxis,self.sample_rate)
+                elif currentTabindex == 3:
+                    self.plotTimeDomain(self.musicTimeInputCanvas, self.xy_coordinates)
+                    self.plotFrequencyDomain(self.musicFrequencyCanvas,self.frequencies,np.abs(self.fft_result))
+                    self.temparray3=self.fft_result.copy()
+                    self. plotSpectrogram( self.musicInputSpectrogramCanvas,yaxis,self.sample_rate)
 
-            elif currentTabindex == 4:
+        elif currentTabindex == 4:
+            file_path, _ = QFileDialog.getOpenFileName(None, "Open ECG File", "", "ECG Files (*.hea)")
+
+            if file_path:
+                # Read the record
+                record = wfdb.rdrecord(file_path[:-4])
+
+                # Extract time-domain values
+                time_values = record.p_signal[:, 0]  # Assuming the first column represents time-domain values
+                
+
+                # Time domain coordinates
+                self.time_domain_Y_coordinates = time_values
+                self.time_domain_X_coordinates = np.arange(len(self.time_domain_Y_coordinates)) / record.fs
+
+                # Store x and y coordinates as a list of tuples
+                self.xy_coordinates = list(zip(self.time_domain_X_coordinates, self.time_domain_Y_coordinates))
+
+                # FFT coordinates
+                self.fft_result = fft(self.time_domain_Y_coordinates)
+                self.frequencies = np.fft.fftfreq(len(self.fft_result), 1 / record.fs)
+
+                # Plotting
                 self.plotTimeDomain(self.ecgTimeInputCanvas, self.xy_coordinates)
-                self.plotFrequencyDomain(self.ecgFrequencyCanvas,self.frequencies,np.abs(self.fft_result))
-                self.temparray4=self.fft_result.copy()
-                self. plotSpectrogram( self.ecgInputSpectrogramCanvas,yaxis,self.sample_rate)
+                self.plotFrequencyDomain(self.ecgFrequencyCanvas, self.frequencies, np.abs(self.fft_result))
+                self.temparray4 = self.fft_result.copy()
+                self.plotSpectrogram(self.ecgInputSpectrogramCanvas, self.time_domain_Y_coordinates, record.fs)
+
+
+                
 
 
     def plotTimeDomain(self, canvas, xy_coordinates):
-        #ax = canvas.figure.clear()
-        #ax = canvas.figure.add_subplot(111)
+        
         x, y = zip(*xy_coordinates)
         canvas.upload_data(x,y)
-
-        # Unpack the list of xy coordinates into separate lists of x and y
-        x, y = zip(*xy_coordinates)
-
-        #ax.plot(x, y)
-        #ax.set_title("Time Domain Plot")
-        #ax.set_xlabel("Time (s)")
-        #ax.set_ylabel("Amplitude")
-        #ax.grid(True)
-        #canvas.draw()
 
         
 
