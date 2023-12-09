@@ -750,7 +750,7 @@ class Ui_MainWindow(object):
                     self.temparray3=self.fft_result.copy()
                     self. plotSpectrogram( self.musicInputSpectrogramCanvas,yaxis,self.sample_rate)
 
-        elif currentTabindex == 4:
+        else :
             file_path, _ = QFileDialog.getOpenFileName(None, "Open ECG File", "", "ECG Files (*.hea)")
 
             if file_path:
