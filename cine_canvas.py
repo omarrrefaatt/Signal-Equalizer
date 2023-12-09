@@ -56,7 +56,7 @@ class MplCanvas(FigureCanvas):
         
     def link_with_me(self,canvas):
         canvas.y_min=self.y_min
-        canvas.y_max=self.y_min
+        canvas.y_max=self.y_max
         canvas.data_plotted=self.data_plotted
         canvas.shift_amount=self.shift_amount
         canvas.time_of_drawing=self.time_of_drawing
@@ -75,14 +75,14 @@ class MplCanvas(FigureCanvas):
     def zoom_in(self):
         self.y_min*=0.9
         self.y_max*=0.9
-        self.window_size=int(self.window_size*0.95)
+        #self.window_size=int(self.window_size*0.95)
         self.zoomed_by=float(self.zoomed_by*0.9)
         if(self.linked):
             self.linked_canvas.zoom_in()
     def zoom_out(self):
         self.y_min = self.y_min*1.1
         self.y_max = self.y_max*1.1
-        self.window_size=int(self.window_size/0.95)
+        #self.window_size=int(self.window_size/0.95)
         self.zoomed_by=float(self.zoomed_by*1.1)
         if(self.linked):
             self.linked_canvas.zoom_out()
@@ -104,6 +104,14 @@ class MplCanvas(FigureCanvas):
         self.shift_amount=int(0.5*self.shift_amount)
         if(self.is_played):
             self.timer.start(self.time_of_drawing)
+
+    def control_speed(self,x):
+        if(self.linked):
+            self.linked_canvas.control_speed(x)
+        self.time_of_drawing=5-(x/10)
+        if(self.is_played):
+            self.timer.start(self.time_of_drawing)
+            self.timer.timeout.connect(self.dynamic_plot)
 
     def pause(self):
         self.is_played=False
