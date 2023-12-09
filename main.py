@@ -1,8 +1,9 @@
-
+import os
 import sys
 import numpy as np
 import wfdb
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import QUrl, QBuffer, QIODevice
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.QtWidgets import QFileDialog, QPushButton
 import matplotlib.pyplot as plt
@@ -758,9 +759,7 @@ class Ui_MainWindow(object):
 
                 #check current tab
                 currentTabindex=self.tabWidget.currentIndex()
-            
-        
-
+                
                 if currentTabindex == 1:
                     self.plotTimeDomain(self.unifromTimeInputCanvas,self.xy_coordinates)
                     self.plotFrequencyDomain(self.unifromFrequencyCanvas,self.frequencies,np.abs(self.fft_result))
@@ -807,7 +806,6 @@ class Ui_MainWindow(object):
                 self.temparray4 = self.fft_result.copy()
                 self.plotFrequencyDomain(self.ecgFrequencyCanvas, self.frequencies, np.abs(self.fft_result))
                 self.plotSpectrogram(self.ecgInputSpectrogramCanvas, self.time_domain_Y_coordinates, record.fs)
-
 
     def plotTimeDomain(self, canvas, xy_coordinates):
         
