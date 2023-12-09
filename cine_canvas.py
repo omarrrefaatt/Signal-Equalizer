@@ -29,6 +29,7 @@ class MplCanvas(FigureCanvas):
         self.is_played=True
         self.linked_canvas=self
         self.linked=False
+        
     def upload_data(self,x_data,y_data):
         self.x_data=x_data
         self.y_data=y_data
@@ -41,6 +42,7 @@ class MplCanvas(FigureCanvas):
         self.timer.timeout.connect(self.dynamic_plot)
         self.timer.start(self.time_of_drawing)
         self.is_played=True
+
     def dynamic_plot(self):
         if(not self.is_played):
             return
@@ -65,6 +67,7 @@ class MplCanvas(FigureCanvas):
         canvas.zoomed_by=self.zoomed_by
         self.linked_canvas=canvas
         self.linked=True
+
     def reset(self):
         self.x_data.clear()
         self.y_data.clear()
@@ -72,6 +75,7 @@ class MplCanvas(FigureCanvas):
         self.axes.clear()
         if(self.linked):
             self.linked_canvas.reset()
+
     def zoom_in(self):
         self.y_min*=0.9
         self.y_max*=0.9
@@ -79,6 +83,7 @@ class MplCanvas(FigureCanvas):
         self.zoomed_by=float(self.zoomed_by*0.9)
         if(self.linked):
             self.linked_canvas.zoom_in()
+
     def zoom_out(self):
         self.y_min = self.y_min*1.1
         self.y_max = self.y_max*1.1
@@ -87,7 +92,6 @@ class MplCanvas(FigureCanvas):
         if(self.linked):
             self.linked_canvas.zoom_out()
 
-    
     def increase_speed(self):
         if(self.linked):
             self.linked_canvas.increase_speed()
@@ -96,7 +100,6 @@ class MplCanvas(FigureCanvas):
         if(self.is_played):
             self.timer.start(self.time_of_drawing)
         
-
     def decrease_speed(self):
         if(self.linked):
             self.linked_canvas.decrease_speed()

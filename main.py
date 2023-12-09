@@ -586,7 +586,7 @@ class Ui_MainWindow(object):
 
 
 
-        self.actionOpen.triggered.connect(self.loadWavFile)  # Connect to loadWavFile method
+        self.actionOpen.triggered.connect(self.loadFile)  # Connect to loadWavFile method
 
         self.pausePlayButton_3.clicked.connect(self.playPauseLoadedSound)  # Connect to playPauseLoadedSound method
         self.pausePlayButton_2.clicked.connect(self.playPauseLoadedSound)  # Connect to playPauseLoadedSound method
@@ -710,7 +710,7 @@ class Ui_MainWindow(object):
         self.sigma=self.stdSlider.value()
         self.chooseSmoothingWindow()
 
-    def loadWavFile(self):
+    def loadFile(self):
 
         #check current tab
         currentTabindex=self.tabWidget.currentIndex()
@@ -796,12 +796,9 @@ class Ui_MainWindow(object):
 
                 # Plotting
                 self.plotTimeDomain(self.ecgTimeInputCanvas, self.xy_coordinates)
-                self.plotFrequencyDomain(self.ecgFrequencyCanvas, self.frequencies, np.abs(self.fft_result))
                 self.temparray4 = self.fft_result.copy()
+                self.plotFrequencyDomain(self.ecgFrequencyCanvas, self.frequencies, np.abs(self.fft_result))
                 self.plotSpectrogram(self.ecgInputSpectrogramCanvas, self.time_domain_Y_coordinates, record.fs)
-
-
-                
 
 
     def plotTimeDomain(self, canvas, xy_coordinates):
@@ -809,7 +806,19 @@ class Ui_MainWindow(object):
         x, y = zip(*xy_coordinates)
         canvas.upload_data(x,y)
 
-        
+    def plotFrequencyDomain(self, canvas,x,y):
+
+        ax = canvas.figure.clear()
+        ax = canvas.figure.add_subplot(111)
+        if canvas == self.ecgFrequencyCanvas:
+            ax.set_xlim(0, 40)
+            ax.set_ylim(0,20000)
+        ax.plot(np.abs(x),y)
+        ax.set_title("Frequency Domain Plot")
+        ax.set_xlabel("Frequency (Hz)")
+        ax.set_ylabel("Amplitude")
+        ax.grid(True)
+        canvas.draw()   
 
     def uniformfrecuencyupdate(self,value,customrange):
         max_frequency = np.max(self.frequencies)
@@ -827,18 +836,6 @@ class Ui_MainWindow(object):
         self.add_shaded_region(self.unifromFrequencyCanvas, self.frequencies, np.abs(self.fft_result), np.abs(self.temparray1))  
         output_time_domain_Y_coordinates=self.calcAndPlotIfft(self.temparray1,self.unifromTimeOutputCanvas,self.time_domain_X_coordinates,self.unifromTimeInputCanvas)  
         self.plotSpectrogram(self.unifromOutputSpectrogramCanvas,output_time_domain_Y_coordinates,self.sample_rate) 
-
-    def plotFrequencyDomain(self, canvas,x,y):
-
-        ax = canvas.figure.clear()
-        ax = canvas.figure.add_subplot(111)
-
-        ax.plot(np.abs(x),y)
-        ax.set_title("Frequency Domain Plot")
-        ax.set_xlabel("Frequency (Hz)")
-        ax.set_ylabel("Amplitude")
-        ax.grid(True)
-        canvas.draw()
     
     def animalfrequencycomp(self, value, range):
 
