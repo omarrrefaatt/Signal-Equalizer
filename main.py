@@ -138,6 +138,10 @@ class Ui_MainWindow(object):
         self.speedSlider_1.setMaximumSize(QtCore.QSize(250, 16777215))
         self.speedSlider_1.setOrientation(QtCore.Qt.Horizontal)
         self.speedSlider_1.setObjectName("speedSlider_1")
+        self.speedSlider_1.setMinimum(10)
+        self.speedSlider_1.setMaximum(50)
+        self.speedSlider_1.setSingleStep(10)
+        self.speedSlider_1.setValue(50)
         self.gridLayout_6.addWidget(self.speedSlider_1, 0, 5, 1, 1)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
@@ -599,6 +603,24 @@ class Ui_MainWindow(object):
 
         self.sigma = self.stdSlider.value()
 
+
+
+        self.zoomInButton_1.clicked.connect(self.unifromTimeInputCanvas.zoom_in)
+        self.zoomOutButton_1.clicked.connect(self.unifromTimeInputCanvas.zoom_out)
+        self.zoomInButton_2.clicked.connect(self.animalTimeInputCanvas.zoom_in)
+        self.zoomOutButton_2.clicked.connect(self.animalTimeInputCanvas.zoom_out)
+        self.zoomInButton_3.clicked.connect(self.musicTimeInputCanvas.zoom_in)
+        self.zoomOutButton_3.clicked.connect(self.musicTimeInputCanvas.zoom_out)
+        self.zoomInButton_4.clicked.connect(self.ecgTimeInputCanvas.zoom_in)
+        self.zoomOutButton_4.clicked.connect(self.ecgTimeInputCanvas.zoom_out)
+
+
+        self.speedSlider_1.valueChanged.connect(self.unifromTimeInputCanvas.control_speed)
+        self.speedSlider_2.valueChanged.connect(self.animalTimeInputCanvas.control_speed)
+        self.speedSlider_3.valueChanged.connect(self.musicTimeInputCanvas.control_speed)
+        self.speedSlider_2.valueChanged.connect(self.ecgTimeInputCanvas.control_speed)
+
+
     def init_empty_canvases(self):
             # Create an empty subplot for each canvas
         window_type = self.smothingComboBox.currentText()
@@ -803,6 +825,8 @@ class Ui_MainWindow(object):
 
         self.plotFrequencyDomain(self.unifromFrequencyCanvas,self.frequencies, np.abs(self.temparray1))  
         self.add_shaded_region(self.unifromFrequencyCanvas, self.frequencies, np.abs(self.fft_result), np.abs(self.temparray1))  
+        output_time_domain_Y_coordinates=self.calcAndPlotIfft(self.temparray1,self.unifromTimeOutputCanvas,self.time_domain_X_coordinates,self.unifromTimeInputCanvas)  
+        self.plotSpectrogram(self.unifromOutputSpectrogramCanvas,output_time_domain_Y_coordinates,self.sample_rate) 
 
     def plotFrequencyDomain(self, canvas,x,y):
 
@@ -846,7 +870,7 @@ class Ui_MainWindow(object):
         self.plotFrequencyDomain(self.animalFrequencyCanvas,self.frequencies, np.abs(self.temparray2))   
         self.add_shaded_region(self.animalFrequencyCanvas, self.frequencies, np.abs(self.fft_result), np.abs(self.temparray2))   
   
-        output_time_domain_Y_coordinates=self.calcAndPlotIfft(self.temparray2,self.animalTimeOutputCanvas,self.time_domain_X_coordinates)  
+        output_time_domain_Y_coordinates=self.calcAndPlotIfft(self.temparray2,self.animalTimeOutputCanvas,self.time_domain_X_coordinates,self.animalTimeInputCanvas)  
         self.plotSpectrogram(self.animalOutputSpectrogramCanvas,output_time_domain_Y_coordinates,self.sample_rate)     
 
 
@@ -863,7 +887,7 @@ class Ui_MainWindow(object):
             
         self.plotFrequencyDomain(self.musicFrequencyCanvas,self.frequencies, np.abs(self.temparray3)) 
         self.add_shaded_region(self.musicFrequencyCanvas, self.frequencies, np.abs(self.fft_result), np.abs(self.temparray3)) 
-        output_time_domain_Y_coordinates=self.calcAndPlotIfft(self.temparray3,self.musicTimeOutputCanvas,self.time_domain_X_coordinates)  
+        output_time_domain_Y_coordinates=self.calcAndPlotIfft(self.temparray3,self.musicTimeOutputCanvas,self.time_domain_X_coordinates,self.musicTimeInputCanvas)  
         self.plotSpectrogram(self.musicOutputSpectrogramCanvas,output_time_domain_Y_coordinates,self.sample_rate)   
     
     def add_shaded_region(self, canvas, x_values, y_values_original, y_values_modified):
@@ -899,13 +923,14 @@ class Ui_MainWindow(object):
             print("No file loaded.")
 
 
-    def calcAndPlotIfft(self,freq_mag,canvas,time):
+    def calcAndPlotIfft(self,freq_mag,canvas,time,input_canvas):
         #y=fft.ifft2(freq_mag)
         y=np.fft.ifft(freq_mag)
         y=y.astype(np.float32)
         xy_coordinates = list(zip(time, y))
         self.plotTimeDomain(canvas, xy_coordinates) 
         self.convertToWavFile(y,self.sample_rate)
+        input_canvas.link_with_me(canvas)
         return y
 
     def  plotSpectrogram(self, canvas,y,sr):
