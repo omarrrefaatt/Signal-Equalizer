@@ -869,10 +869,10 @@ class Ui_MainWindow(object):
     def musicfrequencycomp(self, value, range):
         for i, frequency in enumerate(self.frequencies):
                 if (
-                        (range == 1 and 250 > np.abs(frequency) > 60) or
-                        (range == 2 and (3500 > np.abs(frequency) > 700)) or
-                        (range == 3 and (1000 >np.abs(frequency) > 180)) or
-                        (range == 4 and (5000 > np.abs(frequency) > 3000))
+                        (range == 1 and 1000 > np.abs(frequency) > 0) or
+                        (range == 2 and (7000 > np.abs(frequency) > 500)) or
+                        (range == 3 and (14000 >np.abs(frequency) > 180)) or
+                        (range == 4 and (15000 > np.abs(frequency) > 2000))
                     ):
                         self.temparray3[i] = self.fft_result[i].copy()
                         self.temparray3[i] = self.temparray3[i]*(value / 10)
