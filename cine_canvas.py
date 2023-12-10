@@ -23,7 +23,7 @@ class MplCanvas(FigureCanvas):
         self.y_min_original = 0
         self.y_max_original = 0
         self.shift_amount=50
-        self.time_of_drawing=1
+        self.time_of_drawing=2
         self.timer =  QtCore.QTimer()
         self.zoomed_by=1
         self.is_played=True
@@ -34,6 +34,9 @@ class MplCanvas(FigureCanvas):
         self.x_data=x_data
         self.y_data=y_data
         self.data_size=len(y_data)
+        self.duration_of_file=x_data[-1]
+        self.shift_amount=int(2*(self.data_size/(self.duration_of_file*50)))
+        self.window_size=1000
         self.y_min = min(self.y_data)
         self.y_max = max(self.y_data)
         self.y_min_original = float(min(self.y_data))
@@ -41,13 +44,14 @@ class MplCanvas(FigureCanvas):
         self.data_plotted=0
         self.timer.timeout.connect(self.dynamic_plot)
         self.timer.start(self.time_of_drawing)
-        self.is_played=True
+        self.is_played=False
 
     def dynamic_plot(self):
         if(not self.is_played):
             return
-        if(self.window_size+self.shift_amount > self.data_size):
+        if(self.window_size+self.data_plotted > self.data_size):
             self.data_plotted=0
+            self.is_played=False
         y_draw=self.y_data[self.data_plotted:self.window_size+self.data_plotted]
         x_draw=self.x_data[self.data_plotted:self.window_size+self.data_plotted]
         self.data_plotted=self.data_plotted+self.shift_amount
