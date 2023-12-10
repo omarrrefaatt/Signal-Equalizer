@@ -950,6 +950,8 @@ class Ui_MainWindow(object):
         self.plotTimeDomain(canvas, xy_coordinates) 
         self.convertToWavFile(y,self.sample_rate)
         input_canvas.link_with_me(canvas)
+        self.rewindLoadedSound()
+        input_canvas.rewind()
         return y
 
     def  plotSpectrogram(self, canvas,y,sr):
@@ -973,6 +975,16 @@ class Ui_MainWindow(object):
         
 
     def rewindLoadedSound(self):
+        if self.number_of_output_file>0 :
+            current_directory = os.path.dirname(os.path.abspath(__file__))
+
+            # Construct the file path
+            file_path= os.path.join(current_directory, self.name_of_output)
+
+            # Create the QMediaContent object
+            media_content = QMediaContent(QtCore.QUrl.fromLocalFile(file_path))
+            self.media_player = QMediaPlayer()
+            self.media_player.setMedia(media_content)
         if hasattr(self, 'media_player'):
             self.media_player.setPosition(0)
         else:
