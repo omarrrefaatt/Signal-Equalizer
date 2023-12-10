@@ -729,6 +729,7 @@ class Ui_MainWindow(object):
             fileName, _ = QFileDialog.getOpenFileName(
                 None, "Load WAV File", "", "WAV Files (*.wav);;All Files (*)"
             )
+        
 
             if fileName:
                 self.file_path = fileName  # Store the file path
@@ -746,66 +747,60 @@ class Ui_MainWindow(object):
                 # Reading file data
                 yaxis, self.sample_rate = librosa.load(self.file_path)
 
+
                 # Time domain coordinates
                 self.time_domain_X_coordinates = np.arange(len(yaxis)) / self.sample_rate
                 self.time_domain_Y_coordinates = yaxis
 
-                # Store x and y coordinates as a list of tuples
-                self.xy_coordinates = list(zip(self.time_domain_X_coordinates, self.time_domain_Y_coordinates))
-
-                # FFT coordinates
-                self.fft_result = fft(self.time_domain_Y_coordinates)
-                self.frequencies = np.fft.fftfreq(len(self.fft_result), 1 / self.sample_rate)
-
-                #check current tab
-                currentTabindex=self.tabWidget.currentIndex()
-                
-                if currentTabindex == 1:
-                    self.plotTimeDomain(self.unifromTimeInputCanvas,self.xy_coordinates)
-                    self.plotFrequencyDomain(self.unifromFrequencyCanvas,self.frequencies,np.abs(self.fft_result))
-                    self.temparray1=self.fft_result.copy()
-                    self. plotSpectrogram( self.unifromInputSpectrogramCanvas,yaxis,self.sample_rate)
-
-                elif currentTabindex == 2:
-                    self.plotTimeDomain(self.animalTimeInputCanvas, self.xy_coordinates)
-                    self.plotFrequencyDomain(self.animalFrequencyCanvas,self.frequencies,np.abs(self.fft_result))
-                    self.temparray2=self.fft_result.copy()
-                    self. plotSpectrogram( self.animalInputSpectrogramCanvas,yaxis,self.sample_rate)
-
-
-                elif currentTabindex == 3:
-                    self.plotTimeDomain(self.musicTimeInputCanvas, self.xy_coordinates)
-                    self.plotFrequencyDomain(self.musicFrequencyCanvas,self.frequencies,np.abs(self.fft_result))
-                    self.temparray3=self.fft_result.copy()
-                    self. plotSpectrogram( self.musicInputSpectrogramCanvas,yaxis,self.sample_rate)
-
         else :
-            file_path, _ = QFileDialog.getOpenFileName(None, "Open ECG File", "", "ECG Files (*.hea)")
+                file_path, _ = QFileDialog.getOpenFileName(None, "Open ECG File", "", "ECG Files (*.hea)")
 
-            if file_path:
-                # Read the record
-                record = wfdb.rdrecord(file_path[:-4])
+                if file_path:
+                    # Read the record
+                    record = wfdb.rdrecord(file_path[:-4])
+                    self.sample_rate = record.fs
 
-                # Extract time-domain values
-                time_values = record.p_signal[:, 0]  # Assuming the first column represents time-domain values
-                
+                    # Extract time-domain values
+                    time_values = record.p_signal[:, 0]  # Assuming the first column represents time-domain values
+                    
+                    # Time domain coordinates
+                    self.time_domain_Y_coordinates = time_values
+                    self.time_domain_X_coordinates = np.arange(len(self.time_domain_Y_coordinates)) / record.fs
 
-                # Time domain coordinates
-                self.time_domain_Y_coordinates = time_values
-                self.time_domain_X_coordinates = np.arange(len(self.time_domain_Y_coordinates)) / record.fs
+        # Store x and y coordinates as a list of tuples
+        self.xy_coordinates = list(zip(self.time_domain_X_coordinates, self.time_domain_Y_coordinates))
 
-                # Store x and y coordinates as a list of tuples
-                self.xy_coordinates = list(zip(self.time_domain_X_coordinates, self.time_domain_Y_coordinates))
+        # FFT coordinates
+        self.fft_result = fft(self.time_domain_Y_coordinates)
+        self.frequencies = np.fft.fftfreq(len(self.fft_result), 1 / self.sample_rate)
 
-                # FFT coordinates
-                self.fft_result = fft(self.time_domain_Y_coordinates)
-                self.frequencies = np.fft.fftfreq(len(self.fft_result), 1 / record.fs)
+        #check current tab
+        currentTabindex=self.tabWidget.currentIndex()
+        
+        if currentTabindex == 1:
+            self.plotTimeDomain(self.unifromTimeInputCanvas,self.xy_coordinates)
+            self.plotFrequencyDomain(self.unifromFrequencyCanvas,self.frequencies,np.abs(self.fft_result))
+            self.temparray1=self.fft_result.copy()
+            self. plotSpectrogram( self.unifromInputSpectrogramCanvas,yaxis,self.sample_rate)
 
-                # Plotting
-                self.plotTimeDomain(self.ecgTimeInputCanvas, self.xy_coordinates)
-                self.temparray4 = self.fft_result.copy()
-                self.plotFrequencyDomain(self.ecgFrequencyCanvas, self.frequencies, np.abs(self.fft_result))
-                self.plotSpectrogram(self.ecgInputSpectrogramCanvas, self.time_domain_Y_coordinates, record.fs)
+        elif currentTabindex == 2:
+            self.plotTimeDomain(self.animalTimeInputCanvas, self.xy_coordinates)
+            self.plotFrequencyDomain(self.animalFrequencyCanvas,self.frequencies,np.abs(self.fft_result))
+            self.temparray2=self.fft_result.copy()
+            self. plotSpectrogram( self.animalInputSpectrogramCanvas,yaxis,self.sample_rate)
+
+
+        elif currentTabindex == 3:
+            self.plotTimeDomain(self.musicTimeInputCanvas, self.xy_coordinates)
+            self.plotFrequencyDomain(self.musicFrequencyCanvas,self.frequencies,np.abs(self.fft_result))
+            self.temparray3=self.fft_result.copy()
+            self. plotSpectrogram( self.musicInputSpectrogramCanvas,yaxis,self.sample_rate)
+
+        elif currentTabindex == 4:
+            self.plotTimeDomain(self.ecgTimeInputCanvas, self.xy_coordinates)
+            self.temparray4 = self.fft_result.copy()
+            self.plotFrequencyDomain(self.ecgFrequencyCanvas, self.frequencies, np.abs(self.fft_result))
+            self.plotSpectrogram(self.ecgInputSpectrogramCanvas, self.time_domain_Y_coordinates, record.fs)
 
     def plotTimeDomain(self, canvas, xy_coordinates):
         
@@ -816,9 +811,9 @@ class Ui_MainWindow(object):
 
         ax = canvas.figure.clear()
         ax = canvas.figure.add_subplot(111)
-        if canvas == self.ecgFrequencyCanvas:
-            ax.set_xlim(0, 40)
-            ax.set_ylim(0,20000)
+        # if canvas == self.ecgFrequencyCanvas:
+        #     ax.set_xlim(0, 40)
+        #     ax.set_ylim(0,20000)
         ax.plot(np.abs(x),y)
         ax.set_title("Frequency Domain Plot")
         ax.set_xlabel("Frequency (Hz)")
@@ -881,7 +876,7 @@ class Ui_MainWindow(object):
     def ecgfrequencycomp(self, value, range):
         for i, frequency in enumerate(self.frequencies):
                 if (
-                        (range == 1 and 10 > np.abs(frequency) > 1) or
+                        (range == 1 and(10 > np.abs(frequency) > 0)) or
                         (range == 2 and (30 > np.abs(frequency) > 20)) or
                         (range == 3 and (35 >np.abs(frequency) > 30)) or
                         (range == 4 and (40 > np.abs(frequency) > 35))
@@ -890,7 +885,7 @@ class Ui_MainWindow(object):
                         self.temparray4[i] = self.temparray4[i]*(value / 10)
             
         self.plotFrequencyDomain(self.ecgFrequencyCanvas,self.frequencies, np.abs(self.temparray4)) 
-        #self.add_shaded_region(self.ecgFrequencyCanvas, self.frequencies, np.abs(self.fft_result), np.abs(self.temparray4)) 
+        self.add_shaded_region(self.ecgFrequencyCanvas, self.frequencies, np.abs(self.fft_result), np.abs(self.temparray4)) 
         output_time_domain_Y_coordinates=self.calcAndPlotIfft(self.temparray4,self.ecgTimeOutputCanvas,self.time_domain_X_coordinates,self.ecgTimeInputCanvas)  
         self.plotSpectrogram(self.ecgOutputSpectrogramCanvas,output_time_domain_Y_coordinates,self.sample_rate)   
     
@@ -899,9 +894,9 @@ class Ui_MainWindow(object):
         ax = canvas.figure.clear()
         print("haha")
         ax = canvas.figure.add_subplot(111)
-        if canvas == self.ecgFrequencyCanvas:
-                    ax.set_xlim(0, 40)
-                    ax.set_ylim(0,20000)
+        # if canvas == self.ecgFrequencyCanvas:
+        #             ax.set_xlim(0, 40)
+        #             ax.set_ylim(0,20000)
         # Plot the original data with a specific color
         ax.plot(np.abs(x_values), y_values_original, label='Original Data', color='red')
 
