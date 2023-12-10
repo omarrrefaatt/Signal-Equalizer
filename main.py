@@ -634,6 +634,8 @@ class Ui_MainWindow(object):
         self.speedSlider_2.valueChanged.connect(self.animalTimeInputCanvas.control_speed)
         self.speedSlider_3.valueChanged.connect(self.musicTimeInputCanvas.control_speed)
         self.speedSlider_2.valueChanged.connect(self.ecgTimeInputCanvas.control_speed)
+        self.number_of_output_file=0
+        self.name_of_output=""
 
 
     def init_empty_canvases(self):
@@ -739,6 +741,7 @@ class Ui_MainWindow(object):
 
             if fileName:
                 self.file_path = fileName  # Store the file path
+                print(fileName)
                 self.media_player = QMediaPlayer()
 
                 # Create a QUrl from the file name
@@ -917,8 +920,18 @@ class Ui_MainWindow(object):
 
     def playPauseLoadedSound(self):
         if hasattr(self, 'file_path') and self.file_path:
-            if not hasattr(self, 'media_player'):
+            if not hasattr(self, 'media_player') and self.number_of_output_file==0:
                 media_content = QMediaContent(QtCore.QUrl.fromLocalFile(self.file_path))
+                self.media_player = QMediaPlayer()
+                self.media_player.setMedia(media_content)
+            elif  self.number_of_output_file>0 :
+                current_directory = os.path.dirname(os.path.abspath(__file__))
+
+                # Construct the file path
+                file_path= os.path.join(current_directory, self.name_of_output)
+
+                # Create the QMediaContent object
+                media_content = QMediaContent(QtCore.QUrl.fromLocalFile(file_path))
                 self.media_player = QMediaPlayer()
                 self.media_player.setMedia(media_content)
 
@@ -953,7 +966,11 @@ class Ui_MainWindow(object):
         canvas.draw()
 
     def convertToWavFile(self,data,fs):
-        wavf.write("out.wav", fs, data)
+        self.number_of_output_file=self.number_of_output_file+1
+        self.name_of_output="out"+str(self.number_of_output_file)+".wav"
+        wavf.write(self.name_of_output, fs, data)
+        
+        
 
     def rewindLoadedSound(self):
         if hasattr(self, 'media_player'):
