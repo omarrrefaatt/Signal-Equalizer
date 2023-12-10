@@ -934,6 +934,7 @@ class Ui_MainWindow(object):
                 media_content = QMediaContent(QtCore.QUrl.fromLocalFile(file_path))
                 self.media_player = QMediaPlayer()
                 self.media_player.setMedia(media_content)
+                
 
             if self.media_player.state() == QMediaPlayer.PlayingState:
                 self.media_player.pause()
@@ -950,8 +951,10 @@ class Ui_MainWindow(object):
         self.plotTimeDomain(canvas, xy_coordinates) 
         self.convertToWavFile(y,self.sample_rate)
         input_canvas.link_with_me(canvas)
-        self.rewindLoadedSound()
         input_canvas.rewind()
+        self.rewindLoadedSound()
+
+        self.playPauseLoadedSound()
         return y
 
     def  plotSpectrogram(self, canvas,y,sr):
