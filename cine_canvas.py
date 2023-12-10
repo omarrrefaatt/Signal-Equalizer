@@ -139,6 +139,10 @@ class MplCanvas(FigureCanvas):
             self.play()
 
 
+    def rewind(self):
+        self.data_plotted=0
+
+
 
             
 
