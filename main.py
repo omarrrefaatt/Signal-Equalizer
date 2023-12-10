@@ -603,8 +603,8 @@ class Ui_MainWindow(object):
         self.pausePlayButton_2.clicked.connect(self.animalTimeInputCanvas.play_or_pause) 
         self.pausePlayButton_1.clicked.connect(self.playPauseLoadedSound)  # Connect to playPauseLoadedSound method
         self.pausePlayButton_1.clicked.connect(self.unifromTimeInputCanvas.play_or_pause) 
-        self.pausePlayButton_3.clicked.connect(self.playPauseLoadedSound)  # Connect to playPauseLoadedSound method
-        self.pausePlayButton_3.clicked.connect(self.ecgTimeInputCanvas.play_or_pause) 
+        self.pausePlayButton_4.clicked.connect(self.playPauseLoadedSound)  # Connect to playPauseLoadedSound method
+        self.pausePlayButton_4.clicked.connect(self.ecgTimeInputCanvas.play_or_pause) 
 
         self.rewindButton_3.clicked.connect(self.rewindLoadedSound)
         self.rewindButton_2.clicked.connect(self.rewindLoadedSound)
