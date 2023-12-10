@@ -820,9 +820,9 @@ class Ui_MainWindow(object):
 
         ax = canvas.figure.clear()
         ax = canvas.figure.add_subplot(111)
-        # if canvas == self.ecgFrequencyCanvas:
-        #     ax.set_xlim(0, 40)
-        #     ax.set_ylim(0,20000)
+        if canvas == self.ecgFrequencyCanvas:
+            ax.set_xlim(0, 40)
+            ax.set_ylim(0,20000)
         ax.plot(np.abs(x),y)
         ax.set_title("Frequency Domain Plot")
         ax.set_xlabel("Frequency (Hz)")
@@ -851,9 +851,9 @@ class Ui_MainWindow(object):
 
         for i, frequency in enumerate(self.frequencies):
                 if (
-                        (range == 1 and 4000 > np.abs(frequency) > 1000) or
+                        (range == 1 and 2500 > np.abs(frequency) > 500) or
                         (range == 2 and (1000 > np.abs(frequency) > 125)) or
-                        (range == 3 and (2000 >np.abs(frequency) > 1000)) or
+                        (range == 3 and (4000 >np.abs(frequency) > 1000)) or
                         (range == 4 and (16000 > np.abs(frequency) > 2000))
                     ):
                         self.temparray2[i] = self.fft_result[i].copy()
@@ -903,9 +903,9 @@ class Ui_MainWindow(object):
         ax = canvas.figure.clear()
         print("haha")
         ax = canvas.figure.add_subplot(111)
-        # if canvas == self.ecgFrequencyCanvas:
-        #             ax.set_xlim(0, 40)
-        #             ax.set_ylim(0,20000)
+        if canvas == self.ecgFrequencyCanvas:
+                    ax.set_xlim(0, 40)
+                    ax.set_ylim(0,20000)
         # Plot the original data with a specific color
         ax.plot(np.abs(x_values), y_values_original, label='Original Data', color='red')
 
