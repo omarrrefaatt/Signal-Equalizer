@@ -256,10 +256,10 @@ class Ui_MainWindow(object):
         self.gridLayout_34.addLayout(self.gridLayout_25, 0, 2, 1, 1)
         self.gridLayout_26 = QtWidgets.QGridLayout()
         self.gridLayout_26.setObjectName("gridLayout_26")
-        self.animalSlider_10 = QtWidgets.QSlider(self.frame_14)
-        self.animalSlider_10.setOrientation(QtCore.Qt.Vertical)
-        self.animalSlider_10.setObjectName("animalSlider_10")
-        self.gridLayout_26.addWidget(self.animalSlider_10, 0, 0, 1, 1)
+        self.animalSlider_2 = QtWidgets.QSlider(self.frame_14)
+        self.animalSlider_2.setOrientation(QtCore.Qt.Vertical)
+        self.animalSlider_2.setObjectName("animalSlider_2")
+        self.gridLayout_26.addWidget(self.animalSlider_2, 0, 0, 1, 1)
         self.label_16 = QtWidgets.QLabel(self.frame_14)
         self.label_16.setObjectName("label_16")
         self.gridLayout_26.addWidget(self.label_16, 1, 0, 1, 1)
@@ -821,9 +821,7 @@ class Ui_MainWindow(object):
 
         ax = canvas.figure.clear()
         ax = canvas.figure.add_subplot(111)
-        if canvas == self.ecgFrequencyCanvas:
-            ax.set_xlim(0, 40)
-            ax.set_ylim(0,20000)
+        
         ax.plot(np.abs(x),y)
         ax.set_title("Frequency Domain Plot")
         ax.set_xlabel("Frequency (Hz)")
@@ -855,7 +853,7 @@ class Ui_MainWindow(object):
                         (range == 1 and 2500 > np.abs(frequency) > 500) or
                         (range == 2 and (1000 > np.abs(frequency) > 125)) or
                         (range == 3 and (4000 >np.abs(frequency) > 1000)) or
-                        (range == 4 and (16000 > np.abs(frequency) > 2000))
+                        (range == 4 and (16000 > np.abs(frequency) > 4000))
                     ):
                         self.temparray2[i] = self.fft_result[i].copy()
                         self.temparray2[i] = self.temparray2[i]*(value / 10)
@@ -904,9 +902,7 @@ class Ui_MainWindow(object):
         ax = canvas.figure.clear()
         print("haha")
         ax = canvas.figure.add_subplot(111)
-        if canvas == self.ecgFrequencyCanvas:
-                    ax.set_xlim(0, 40)
-                    ax.set_ylim(0,20000)
+        
         # Plot the original data with a specific color
         ax.plot(np.abs(x_values), y_values_original, label='Original Data', color='red')
 
@@ -971,6 +967,8 @@ class Ui_MainWindow(object):
         self.number_of_output_file=self.number_of_output_file+1
         self.name_of_output="out"+str(self.number_of_output_file)+".wav"
         wavf.write(self.name_of_output, fs, data)
+        if self.number_of_output_file>1:
+             os.remove("out" + str(self.number_of_output_file - 1) + ".wav")
         
         
 
@@ -1007,10 +1005,10 @@ class Ui_MainWindow(object):
         self.rewindButton_1.setText(_translate("MainWindow", "Rewind"))
         self.checkBox_1.setText(_translate("MainWindow", "Hide Spectrogram"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.unifromRangeTab), _translate("MainWindow", "Uniform Range"))
-        self.label_12.setText(_translate("MainWindow", "TextLabel"))
-        self.label_13.setText(_translate("MainWindow", "TextLabel"))
-        self.label_15.setText(_translate("MainWindow", "TextLabel"))
-        self.label_16.setText(_translate("MainWindow", "TextLabel"))
+        self.label_12.setText(_translate("MainWindow", "Elephant"))
+        self.label_13.setText(_translate("MainWindow", "Bat"))
+        self.label_15.setText(_translate("MainWindow", "Eagle"))
+        self.label_16.setText(_translate("MainWindow", "Whale"))
         self.zoomInButton_2.setText(_translate("MainWindow", "Zoom In"))
         self.checkBox_2.setText(_translate("MainWindow", "Hide Spectrogram"))
         self.zoomOutButton_2.setText(_translate("MainWindow", "Zoom Out"))
@@ -1018,10 +1016,10 @@ class Ui_MainWindow(object):
         self.rewindButton_2.setText(_translate("MainWindow", "Rewind"))
         self.pausePlayButton_2.setText(_translate("MainWindow", "Pause/Play"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.animalTab), _translate("MainWindow", "Animal Sounds"))
-        self.label_18.setText(_translate("MainWindow", "TextLabel"))
-        self.label_20.setText(_translate("MainWindow", "TextLabel"))
-        self.label_21.setText(_translate("MainWindow", "TextLabel"))
-        self.label_22.setText(_translate("MainWindow", "TextLabel"))
+        self.label_18.setText(_translate("MainWindow", "Drums"))
+        self.label_20.setText(_translate("MainWindow", "Xylophone"))
+        self.label_21.setText(_translate("MainWindow", "Occordion"))
+        self.label_22.setText(_translate("MainWindow", "Cymbal"))
         self.checkBox_3.setText(_translate("MainWindow", "Hide Spectrogram"))
         self.label_14.setText(_translate("MainWindow", "Speed"))
         self.zoomInButton_3.setText(_translate("MainWindow", "Zoom In"))
@@ -1032,10 +1030,10 @@ class Ui_MainWindow(object):
         self.zoomOutButton_4.setText(_translate("MainWindow", "Zoom Out"))
         self.zoomInButton_4.setText(_translate("MainWindow", "Zoom In"))
         self.checkBox_4.setText(_translate("MainWindow", "Hide Spectrogram"))
-        self.label_4.setText(_translate("MainWindow", "TextLabel"))
-        self.label_2.setText(_translate("MainWindow", "TextLabel"))
-        self.label_3.setText(_translate("MainWindow", "TextLabel"))
-        self.label_7.setText(_translate("MainWindow", "TextLabel"))
+        self.label_4.setText(_translate("MainWindow", "Normal ECG"))
+        self.label_2.setText(_translate("MainWindow", "Sinus Rhythm"))
+        self.label_3.setText(_translate("MainWindow", "Atrial"))
+        self.label_7.setText(_translate("MainWindow", "Myocardial"))
         self.label_19.setText(_translate("MainWindow", "Speed"))
         self.rewindButton_4.setText(_translate("MainWindow", "Rewind"))
         self.pausePlayButton_4.setText(_translate("MainWindow", "Pause/Play"))
