@@ -607,8 +607,12 @@ class Ui_MainWindow(object):
         self.pausePlayButton_4.clicked.connect(self.playPauseLoadedSound)  # Connect to playPauseLoadedSound method
         self.pausePlayButton_4.clicked.connect(self.ecgTimeInputCanvas.play_or_pause) 
 
+        self.rewindButton_2.clicked.connect(self.rewindLoadedSound) 
+        self.rewindButton_2.clicked.connect(self.animalTimeInputCanvas.rewind) 
         self.rewindButton_3.clicked.connect(self.rewindLoadedSound)
-        self.rewindButton_2.clicked.connect(self.rewindLoadedSound)
+        self.rewindButton_3.clicked.connect(self.musicTimeInputCanvas.rewind)
+        self.rewindButton_4.clicked.connect(self.ecgTimeInputCanvas.rewind)
+        
 
         self.smothingComboBox.currentIndexChanged.connect(self.chooseSmoothingWindow)
 
@@ -921,14 +925,6 @@ class Ui_MainWindow(object):
                 media_content = QMediaContent(QtCore.QUrl.fromLocalFile(self.file_path))
                 self.media_player = QMediaPlayer()
                 self.media_player.setMedia(media_content)
-            elif self.number_of_output_file > 1:
-                current_directory = os.path.dirname(os.path.abspath(__file__))
-                file_path = os.path.join(current_directory, self.name_of_output)
-                media_content_1 = QMediaContent(QtCore.QUrl.fromLocalFile(file_path))
-                if not hasattr(self, 'media_player'):
-                    self.media_player = QMediaPlayer()
-                self.media_player.setMedia(media_content_1)
-
             if self.media_player.state() == QMediaPlayer.PlayingState:
                 self.media_player.pause()
             else:
@@ -973,6 +969,7 @@ class Ui_MainWindow(object):
         
 
     def rewindLoadedSound(self):
+        
         if self.number_of_output_file>0 :
             current_directory = os.path.dirname(os.path.abspath(__file__))
 
