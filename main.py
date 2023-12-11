@@ -636,6 +636,7 @@ class Ui_MainWindow(object):
         #self.speedSlider_3.valueChanged.connect(self.musicTimeInputCanvas.control_speed)
         #self.speedSlider_2.valueChanged.connect(self.ecgTimeInputCanvas.control_speed)
         self.number_of_output_file=0
+        self.tabWidget.currentChanged.connect(self.resetNumber_of_output_file)
         self.name_of_output=""
 
 
@@ -900,7 +901,6 @@ class Ui_MainWindow(object):
     def add_shaded_region(self, canvas, x_values, y_values_original, y_values_modified):
         # Assuming canvas is a matplotlib axes
         ax = canvas.figure.clear()
-        print("haha")
         ax = canvas.figure.add_subplot(111)
         
         # Plot the original data with a specific color
@@ -921,13 +921,13 @@ class Ui_MainWindow(object):
                 media_content = QMediaContent(QtCore.QUrl.fromLocalFile(self.file_path))
                 self.media_player = QMediaPlayer()
                 self.media_player.setMedia(media_content)
-            elif self.number_of_output_file > 0:
+            elif self.number_of_output_file > 1:
                 current_directory = os.path.dirname(os.path.abspath(__file__))
                 file_path = os.path.join(current_directory, self.name_of_output)
-                media_content = QMediaContent(QtCore.QUrl.fromLocalFile(file_path))
+                media_content_1 = QMediaContent(QtCore.QUrl.fromLocalFile(file_path))
                 if not hasattr(self, 'media_player'):
                     self.media_player = QMediaPlayer()
-                self.media_player.setMedia(media_content)
+                self.media_player.setMedia(media_content_1)
 
             if self.media_player.state() == QMediaPlayer.PlayingState:
                 self.media_player.pause()
@@ -987,6 +987,9 @@ class Ui_MainWindow(object):
             self.media_player.setPosition(0)
         else:
             print("No file loaded.")
+    
+    def resetNumber_of_output_file(self):
+        self.number_of_output_file=0
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
