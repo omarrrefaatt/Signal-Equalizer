@@ -929,8 +929,16 @@ class Ui_MainWindow(object):
                 self.media_player.pause()
             else:
                 self.media_player.play()
-        else:
-            print("No file loaded.")
+
+    def rewindLoadedSound(self):
+        if hasattr(self, 'file_path') and self.file_path:
+            if not hasattr(self, 'media_player') and self.number_of_output_file == 0:
+                media_content = QMediaContent(QtCore.QUrl.fromLocalFile(self.file_path))
+                self.media_player = QMediaPlayer()
+                self.media_player.setMedia(media_content)
+            print("Before setPosition:", self.media_player.state())
+            self.media_player.setPosition(0)              
+            print("Before setPosition:", self.media_player.state())
 
     def calcAndPlotIfft(self,freq_mag,canvas,time,input_canvas):
         #y=fft.ifft2(freq_mag)
@@ -966,24 +974,15 @@ class Ui_MainWindow(object):
         if self.number_of_output_file>1:
              os.remove("out" + str(self.number_of_output_file - 1) + ".wav")
         
-        
-
-    def rewindLoadedSound(self):
-        
-        if self.number_of_output_file>0 :
-            current_directory = os.path.dirname(os.path.abspath(__file__))
-
-            # Construct the file path
-            file_path= os.path.join(current_directory, self.name_of_output)
-
-            # Create the QMediaContent object
-            media_content = QMediaContent(QtCore.QUrl.fromLocalFile(file_path))
-            self.media_player = QMediaPlayer()
-            self.media_player.setMedia(media_content)
-        if hasattr(self, 'media_player'):
-            self.media_player.setPosition(0)
-        else:
-            print("No file loaded.")
+    def rewindLoadedSound(self):       
+        current_directory = os.path.dirname(os.path.abspath(__file__))
+        # Construct the file path
+        file_path= os.path.join(current_directory, self.name_of_output)
+        # Create the QMediaContent object
+        media_content = QMediaContent(QtCore.QUrl.fromLocalFile(file_path))
+        self.media_player = QMediaPlayer()
+        self.media_player.setMedia(media_content)
+        self.media_player.setPosition(0)
     
     def resetNumber_of_output_file(self):
         self.number_of_output_file=0
