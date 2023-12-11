@@ -886,10 +886,10 @@ class Ui_MainWindow(object):
     def ecgfrequencycomp(self, value, range):
         for i, frequency in enumerate(self.frequencies):
                 if (
-                        (range == 1 and(10 > np.abs(frequency) > 0)) or
-                        (range == 2 and (30 > np.abs(frequency) > 20)) or
-                        (range == 3 and (35 >np.abs(frequency) > 30)) or
-                        (range == 4 and (40 > np.abs(frequency) > 35))
+                        (range == 1 and(50 > np.abs(frequency) > 0)) or
+                        (range == 2 and (100 > np.abs(frequency) > 50)) or
+                        (range == 3 and (450 >np.abs(frequency) > 50)) or
+                        (range == 4 and (8 > np.abs(frequency) > 0))
                     ):
                         self.temparray4[i] = self.fft_result[i].copy()
                         self.temparray4[i] = self.temparray4[i]*(value / 10)
