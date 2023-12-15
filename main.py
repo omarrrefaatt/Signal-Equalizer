@@ -4,6 +4,7 @@ import numpy as np
 import wfdb
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QUrl, QBuffer, QIODevice
+from PyQt5.QtCore import Qt
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.QtWidgets import QFileDialog, QPushButton
 import matplotlib.pyplot as plt
@@ -530,23 +531,6 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(2)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-        self.spinBox.setMaximum(10)
-        self.spinBox.setMinimum(1)
-        self.spinBox.setSingleStep(1)
-        self.spinBox.setValue(2)
-        self.spinBox_2.setMaximum(10)
-        self.spinBox_2.setMinimum(1)
-        self.spinBox_2.setSingleStep(1)
-        self.spinBox_2.setValue(2)
-        self.spinBox_3.setMaximum(10)
-        self.spinBox_3.setMinimum(1)
-        self.spinBox_3.setSingleStep(1)
-        self.spinBox_3.setValue(2)
-        self.spinBox_4.setMaximum(10)
-        self.spinBox_4.setMinimum(1)
-        self.spinBox_4.setSingleStep(1)
-        self.spinBox_4.setValue(2)
-
 
         # create canvas
         self.smoothingWindowCanvas = FigureCanvas(plt.figure(figsize=(4, 3)))
@@ -574,12 +558,6 @@ class Ui_MainWindow(object):
         self.ecgFrequencyCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.ecgInputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.ecgOutputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
-
-
-        self.spinBox.valueChanged.connect(self.unifromTimeInputCanvas.control_speed)
-        self.spinBox.valueChanged.connect(self.animalTimeInputCanvas.control_speed)
-        self.spinBox.valueChanged.connect(self.musicTimeInputCanvas.control_speed)
-        self.spinBox.valueChanged.connect(self.ecgTimeInputCanvas.control_speed)
 
         # initialize empty canvases
         self.init_empty_canvases()
@@ -616,6 +594,11 @@ class Ui_MainWindow(object):
                 slider_instance4.setRange(0,10)
                 slider_instance4.setValue(10)
                 slider_instance4.valueChanged.connect(lambda value, range=i: self.ecgfrequencycomp(value, range))
+            
+        self.checkBox_1.stateChanged.connect(lambda state, canvas=self.unifromInputSpectrogramCanvas,canvas2=self.unifromOutputSpectrogramCanvas: self.toggle_spectrogram(state, canvas,canvas2))
+        self.checkBox_2.stateChanged.connect(lambda state, canvas=self.animalInputSpectrogramCanvas ,canvas2=self.animalOutputSpectrogramCanvas: self.toggle_spectrogram(state, canvas,canvas2))
+        self.checkBox_3.stateChanged.connect(lambda state, canvas=self.musicInputSpectrogramCanvas , canvas2= self.musicOutputSpectrogramCanvas: self.toggle_spectrogram(state, canvas,canvas2))
+        self.checkBox_4.stateChanged.connect(lambda state, canvas=self.ecgInputSpectrogramCanvas,canvas2=self.ecgOutputSpectrogramCanvas: self.toggle_spectrogram(state, canvas,canvas2))    
 
 
 
@@ -814,10 +797,12 @@ class Ui_MainWindow(object):
 
         #check current tab
         currentTabindex=self.tabWidget.currentIndex()
+        self.output = False
         
         if currentTabindex == 1:
             self.plotTimeDomain(self.unifromTimeInputCanvas,self.xy_coordinates)
             self.plotFrequencyDomain(self.unifromFrequencyCanvas,self.frequencies,np.abs(self.fft_result))
+            
             self.temparray1=self.fft_result.copy()
             self. plotSpectrogram( self.unifromInputSpectrogramCanvas,yaxis,self.sample_rate)
 
@@ -867,9 +852,10 @@ class Ui_MainWindow(object):
                     self.temparray1[i] = self.temparray1[i]*(value / 10)
 
         self.plotFrequencyDomain(self.unifromFrequencyCanvas,self.frequencies, np.abs(self.temparray1))  
-        self.add_shaded_region(self.unifromFrequencyCanvas, self.frequencies, np.abs(self.fft_result), np.abs(self.temparray1))  
-        output_time_domain_Y_coordinates=self.calcAndPlotIfft(self.temparray1,self.unifromTimeOutputCanvas,self.time_domain_X_coordinates,self.unifromTimeInputCanvas)  
-        self.plotSpectrogram(self.unifromOutputSpectrogramCanvas,output_time_domain_Y_coordinates,self.sample_rate) 
+        self.add_shaded_region(self.unifromFrequencyCanvas, self.frequencies, np.abs(self.fft_result), np.abs(self.temparray1)) 
+        self.output = True 
+        self.output_time_domain_Y_coordinates=self.calcAndPlotIfft(self.temparray1,self.unifromTimeOutputCanvas,self.time_domain_X_coordinates,self.unifromTimeInputCanvas)  
+        self.plotSpectrogram(self.unifromOutputSpectrogramCanvas,self.output_time_domain_Y_coordinates,self.sample_rate) 
     
     def animalfrequencycomp(self, value, range):
 
@@ -884,9 +870,10 @@ class Ui_MainWindow(object):
                         self.temparray2[i] = self.temparray2[i]*(value / 10)
 
         self.plotFrequencyDomain(self.animalFrequencyCanvas,self.frequencies, np.abs(self.temparray2))   
-        self.add_shaded_region(self.animalFrequencyCanvas, self.frequencies, np.abs(self.fft_result), np.abs(self.temparray2))     
-        output_time_domain_Y_coordinates=self.calcAndPlotIfft(self.temparray2,self.animalTimeOutputCanvas,self.time_domain_X_coordinates,self.animalTimeInputCanvas)  
-        self.plotSpectrogram(self.animalOutputSpectrogramCanvas,output_time_domain_Y_coordinates,self.sample_rate)     
+        self.add_shaded_region(self.animalFrequencyCanvas, self.frequencies, np.abs(self.fft_result), np.abs(self.temparray2))  
+        self.output = True    
+        self.output_time_domain_Y_coordinates=self.calcAndPlotIfft(self.temparray2,self.animalTimeOutputCanvas,self.time_domain_X_coordinates,self.animalTimeInputCanvas)  
+        self.plotSpectrogram(self.animalOutputSpectrogramCanvas,self.output_time_domain_Y_coordinates,self.sample_rate)     
 
     def musicfrequencycomp(self, value, range):
         for i, frequency in enumerate(self.frequencies):
@@ -900,9 +887,10 @@ class Ui_MainWindow(object):
                         self.temparray3[i] = self.temparray3[i]*(value / 10)
             
         self.plotFrequencyDomain(self.musicFrequencyCanvas,self.frequencies, np.abs(self.temparray3)) 
-        self.add_shaded_region(self.musicFrequencyCanvas, self.frequencies, np.abs(self.fft_result), np.abs(self.temparray3)) 
-        output_time_domain_Y_coordinates=self.calcAndPlotIfft(self.temparray3,self.musicTimeOutputCanvas,self.time_domain_X_coordinates,self.musicTimeInputCanvas)  
-        self.plotSpectrogram(self.musicOutputSpectrogramCanvas,output_time_domain_Y_coordinates,self.sample_rate)
+        self.add_shaded_region(self.musicFrequencyCanvas, self.frequencies, np.abs(self.fft_result), np.abs(self.temparray3))
+        self.output = True  
+        self.output_time_domain_Y_coordinates=self.calcAndPlotIfft(self.temparray3,self.musicTimeOutputCanvas,self.time_domain_X_coordinates,self.musicTimeInputCanvas)  
+        self.plotSpectrogram(self.musicOutputSpectrogramCanvas,self.output_time_domain_Y_coordinates,self.sample_rate)
 
     def ecgfrequencycomp(self, value, range):
         for i, frequency in enumerate(self.frequencies):
@@ -917,8 +905,9 @@ class Ui_MainWindow(object):
             
         self.plotFrequencyDomain(self.ecgFrequencyCanvas,self.frequencies, np.abs(self.temparray4)) 
         self.add_shaded_region(self.ecgFrequencyCanvas, self.frequencies, np.abs(self.fft_result), np.abs(self.temparray4)) 
-        output_time_domain_Y_coordinates=self.calcAndPlotIfft(self.temparray4,self.ecgTimeOutputCanvas,self.time_domain_X_coordinates,self.ecgTimeInputCanvas)  
-        self.plotSpectrogram(self.ecgOutputSpectrogramCanvas,output_time_domain_Y_coordinates,self.sample_rate)   
+        self.output = True 
+        self.output_time_domain_Y_coordinates=self.calcAndPlotIfft(self.temparray4,self.ecgTimeOutputCanvas,self.time_domain_X_coordinates,self.ecgTimeInputCanvas)  
+        self.plotSpectrogram(self.ecgOutputSpectrogramCanvas,self.output_time_domain_Y_coordinates,self.sample_rate)   
     
     def add_shaded_region(self, canvas, x_values, y_values_original, y_values_modified):
         # Assuming canvas is a matplotlib axes
@@ -981,6 +970,23 @@ class Ui_MainWindow(object):
         S_dB = librosa.power_to_db(S, ref=np.max)
         img = librosa.display.specshow(S_dB, x_axis='time', y_axis='mel', sr=sr, fmax = max_frequency, ax=ax)
         canvas.draw()
+
+    def toggle_spectrogram(self, state, canvas,canvas2):
+        # Toggle the visibility of the stored AxesImage object based on checkbox state
+            if state == Qt.Checked:
+                # Clear the canvas
+                canvas.figure.clear()
+                canvas.figure.add_subplot(111)
+                canvas.draw()
+
+                canvas2.figure.clear()
+                canvas2.figure.add_subplot(111)
+                canvas2.draw()
+            else:
+                # Plot the data again
+                self.plotSpectrogram(canvas, self.time_domain_Y_coordinates,self.sample_rate)
+                if self.output:
+                    self.plotSpectrogram(canvas2, self.output_time_domain_Y_coordinates ,self.sample_rate)
 
     def convertToWavFile(self,data,fs):
         self.number_of_output_file=self.number_of_output_file+1
