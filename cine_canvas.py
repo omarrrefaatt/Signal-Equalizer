@@ -115,7 +115,7 @@ class MplCanvas(FigureCanvas):
     def control_speed(self,x):
         if(self.linked):
             self.linked_canvas.control_speed(x)
-        self.time_of_drawing=5-(x/10)
+        self.time_of_drawing=x
         if(self.is_played):
             self.timer.start(self.time_of_drawing)
             self.timer.timeout.connect(self.dynamic_plot)
