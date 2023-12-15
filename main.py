@@ -623,8 +623,6 @@ class Ui_MainWindow(object):
         self.checkBox_3.stateChanged.connect(lambda state, canvas=self.musicInputSpectrogramCanvas , canvas2= self.musicOutputSpectrogramCanvas: self.toggle_spectrogram(state, canvas,canvas2))
         self.checkBox_4.stateChanged.connect(lambda state, canvas=self.ecgInputSpectrogramCanvas,canvas2=self.ecgOutputSpectrogramCanvas: self.toggle_spectrogram(state, canvas,canvas2))    
 
-
-
         self.actionOpen.triggered.connect(self.loadFile)  # Connect to loadWavFile method
 
         self.pausePlayButton_3.clicked.connect(self.playPauseLoadedSound)  # Connect to playPauseLoadedSound method
@@ -637,10 +635,13 @@ class Ui_MainWindow(object):
         self.pausePlayButton_4.clicked.connect(self.ecgTimeInputCanvas.play_or_pause) 
 
         self.rewindButton_2.clicked.connect(self.rewindLoadedSound) 
-        self.rewindButton_2.clicked.connect(self.animalTimeInputCanvas.rewind) 
+        self.rewindButton_2.clicked.connect(self.animalTimeInputCanvas.rewind)
+        self.rewindButton_2.clicked.connect(self.animalTimeOutputCanvas.rewind)
         self.rewindButton_3.clicked.connect(self.rewindLoadedSound)
         self.rewindButton_3.clicked.connect(self.musicTimeInputCanvas.rewind)
+        self.rewindButton_3.clicked.connect(self.musicTimeOutputCanvas.rewind)
         self.rewindButton_4.clicked.connect(self.ecgTimeInputCanvas.rewind)
+        self.rewindButton_4.clicked.connect(self.ecgTimeOutputCanvas.rewind)
         
 
         self.smothingComboBox.currentIndexChanged.connect(self.chooseSmoothingWindow)
@@ -958,16 +959,16 @@ class Ui_MainWindow(object):
             else:
                 self.media_player.play()
 
-    def rewindLoadedSound(self):
-        if hasattr(self, 'file_path') and self.file_path:
-            if not hasattr(self, 'media_player') and self.number_of_output_file == 0:
-                media_content = QMediaContent(QtCore.QUrl.fromLocalFile(self.file_path))
-                self.media_player = QMediaPlayer()
-                self.media_player.setMedia(media_content)
-            print("Before setPosition:", self.media_player.state())
-            self.media_player.setPosition(0)              
-            print("Before setPosition:", self.media_player.state())
-
+    def rewindLoadedSound(self):       
+            current_directory = os.path.dirname(os.path.abspath(__file__))
+            # Construct the file path
+            file_path= os.path.join(current_directory, self.name_of_output)
+            # Create the QMediaContent object
+            media_content = QMediaContent(QtCore.QUrl.fromLocalFile(file_path))
+            self.media_player = QMediaPlayer()
+            self.media_player.setMedia(media_content)
+            self.media_player.play()
+            
     def calcAndPlotIfft(self,freq_mag,canvas,time,input_canvas):
         #y=fft.ifft2(freq_mag)
         y=np.fft.ifft(freq_mag)
@@ -1018,16 +1019,6 @@ class Ui_MainWindow(object):
         if self.number_of_output_file>1:
              os.remove("out" + str(self.number_of_output_file - 1) + ".wav")
         
-    def rewindLoadedSound(self):       
-        current_directory = os.path.dirname(os.path.abspath(__file__))
-        # Construct the file path
-        file_path= os.path.join(current_directory, self.name_of_output)
-        # Create the QMediaContent object
-        media_content = QMediaContent(QtCore.QUrl.fromLocalFile(file_path))
-        self.media_player = QMediaPlayer()
-        self.media_player.setMedia(media_content)
-        self.media_player.setPosition(0)
-    
     def resetNumber_of_output_file(self):
         self.number_of_output_file=0
 
