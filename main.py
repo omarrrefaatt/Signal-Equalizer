@@ -527,10 +527,28 @@ class Ui_MainWindow(object):
         self.actionOpen.setObjectName("actionOpen")
         self.menuFile.addAction(self.actionOpen)
         self.menubar.addAction(self.menuFile.menuAction())
+        self.spinBox.setMaximum(10)
+        self.spinBox.setMinimum(1)
+        self.spinBox.setSingleStep(1)
+        self.spinBox.setValue(2)
+        self.spinBox_2.setMaximum(10)
+        self.spinBox_2.setMinimum(1)
+        self.spinBox_2.setSingleStep(1)
+        self.spinBox_2.setValue(2)
+        self.spinBox_3.setMaximum(10)
+        self.spinBox_3.setMinimum(1)
+        self.spinBox_3.setSingleStep(1)
+        self.spinBox_3.setValue(2)
+        self.spinBox_4.setMaximum(10)
+        self.spinBox_4.setMinimum(1)
+        self.spinBox_4.setSingleStep(1)
+        self.spinBox_4.setValue(2)
+
 
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(2)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
 
         # create canvas
         self.smoothingWindowCanvas = FigureCanvas(plt.figure(figsize=(4, 3)))
@@ -558,6 +576,11 @@ class Ui_MainWindow(object):
         self.ecgFrequencyCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.ecgInputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.ecgOutputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
+
+        self.spinBox.valueChanged.connect(self.unifromTimeInputCanvas.control_speed)
+        self.spinBox.valueChanged.connect(self.animalTimeInputCanvas.control_speed)
+        self.spinBox.valueChanged.connect(self.musicTimeInputCanvas.control_speed)
+        self.spinBox.valueChanged.connect(self.ecgTimeInputCanvas.control_speed)
 
         # initialize empty canvases
         self.init_empty_canvases()
