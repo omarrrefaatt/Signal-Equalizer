@@ -818,15 +818,12 @@ class Ui_MainWindow(object):
             self.plotSpectrogram(self.ecgInputSpectrogramCanvas, self.time_domain_Y_coordinates, record.fs)
 
     def plotTimeDomain(self, canvas, xy_coordinates):
-        
         x, y = zip(*xy_coordinates)
         canvas.upload_data(x,y)
 
     def plotFrequencyDomain(self, canvas,x,y):
-
         ax = canvas.figure.clear()
         ax = canvas.figure.add_subplot(111)
-        
         ax.plot(np.abs(x),y)
         ax.set_title("Frequency Domain Plot")
         ax.set_xlabel("Frequency (Hz)")
@@ -864,11 +861,9 @@ class Ui_MainWindow(object):
                         self.temparray2[i] = self.temparray2[i]*(value / 10)
 
         self.plotFrequencyDomain(self.animalFrequencyCanvas,self.frequencies, np.abs(self.temparray2))   
-        self.add_shaded_region(self.animalFrequencyCanvas, self.frequencies, np.abs(self.fft_result), np.abs(self.temparray2))   
-  
+        self.add_shaded_region(self.animalFrequencyCanvas, self.frequencies, np.abs(self.fft_result), np.abs(self.temparray2))     
         output_time_domain_Y_coordinates=self.calcAndPlotIfft(self.temparray2,self.animalTimeOutputCanvas,self.time_domain_X_coordinates,self.animalTimeInputCanvas)  
         self.plotSpectrogram(self.animalOutputSpectrogramCanvas,output_time_domain_Y_coordinates,self.sample_rate)     
-
 
     def musicfrequencycomp(self, value, range):
         for i, frequency in enumerate(self.frequencies):
@@ -905,11 +900,9 @@ class Ui_MainWindow(object):
     def add_shaded_region(self, canvas, x_values, y_values_original, y_values_modified):
         # Assuming canvas is a matplotlib axes
         ax = canvas.figure.clear()
-        ax = canvas.figure.add_subplot(111)
-        
+        ax = canvas.figure.add_subplot(111)    
         # Plot the original data with a specific color
         ax.plot(np.abs(x_values), y_values_original, label='Original Data', color='red')
-
         # Plot the modified data with a different color
         ax.plot(np.abs(x_values), y_values_modified, label='Modified Data', color='blue')
         ax.set_title("Frequency Domain Plot with Shaded Region")
@@ -950,7 +943,6 @@ class Ui_MainWindow(object):
         input_canvas.link_with_me(canvas)
         input_canvas.rewind()
         self.rewindLoadedSound()
-
         self.playPauseLoadedSound()
         return y
 
