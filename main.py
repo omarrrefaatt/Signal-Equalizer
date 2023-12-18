@@ -999,18 +999,13 @@ class Ui_MainWindow(object):
         # Toggle the visibility of the stored AxesImage object based on checkbox state
             if state == Qt.Checked:
                 # Clear the canvas
-                canvas.figure.clear()
-                canvas.figure.add_subplot(111)
-                canvas.draw()
+                canvas.hide()
 
-                canvas2.figure.clear()
-                canvas2.figure.add_subplot(111)
-                canvas2.draw()
+                canvas2.hide()
             else:
                 # Plot the data again
-                self.plotSpectrogram(canvas, self.time_domain_Y_coordinates,self.sample_rate)
-                if self.output:
-                    self.plotSpectrogram(canvas2, self.output_time_domain_Y_coordinates ,self.sample_rate)
+                canvas.show()
+                canvas2.show()
 
     def convertToWavFile(self,data,fs):
         self.number_of_output_file=self.number_of_output_file+1
