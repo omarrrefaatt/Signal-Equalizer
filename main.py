@@ -902,10 +902,10 @@ class Ui_MainWindow(object):
     def musicfrequencycomp(self, value, range):
         for i, frequency in enumerate(self.frequencies):
                 if (
-                        (range == 1 and 1000 > np.abs(frequency) > 0) or
-                        (range == 2 and (7000 > np.abs(frequency) > 500)) or
-                        (range == 3 and (4000 >np.abs(frequency) > 180)) or
-                        (range == 4 and (15000 > np.abs(frequency) > 2000))
+                        (range == 1 and 250 > np.abs(frequency) > 0) or
+                        (range == 2 and (1000 > np.abs(frequency) > 250)) or
+                        (range == 3 and (4000 >np.abs(frequency) > 1000)) or
+                        (range == 4 and (16000 > np.abs(frequency) > 4000))
                     ):
                         self.temparray3[i] = self.fft_result[i].copy()
                         self.temparray3[i] = self.temparray3[i]*(value / 10)
@@ -1045,10 +1045,10 @@ class Ui_MainWindow(object):
         self.rewindButton_2.setText(_translate("MainWindow", "Rewind"))
         self.pausePlayButton_2.setText(_translate("MainWindow", "Pause/Play"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.animalTab), _translate("MainWindow", "Animal Sounds"))
-        self.label_18.setText(_translate("MainWindow", "Drums"))
+        self.label_18.setText(_translate("MainWindow", "Bass"))
         self.label_20.setText(_translate("MainWindow", "Xylophone"))
-        self.label_21.setText(_translate("MainWindow", "Occordion"))
-        self.label_22.setText(_translate("MainWindow", "Cymbal"))
+        self.label_21.setText(_translate("MainWindow", "Guitar"))
+        self.label_22.setText(_translate("MainWindow", "Hi-Hat"))
         self.checkBox_3.setText(_translate("MainWindow", "Hide Spectrogram"))
         self.label_14.setText(_translate("MainWindow", "Speed"))
         self.zoomInButton_3.setText(_translate("MainWindow", "Zoom In"))
