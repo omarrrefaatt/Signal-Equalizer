@@ -283,7 +283,11 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(4)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+        #sigma of STD
+        self.sigma=1
         
+        #slider ranges setup
         for i in range(1, 11):
             slider_name1 = f"uniforRangeSlider_{i}"
             slider_instance1 = getattr(self, slider_name1, None)
@@ -300,9 +304,15 @@ class Ui_MainWindow(object):
                 slider_instance2.valueChanged.connect(lambda value, range=i: self.changefrequencycomp(value, range,(self.tabWidget.currentIndex())))
         self.actionOpen.triggered.connect(self.loadFile) 
 
+        #changes appearance according to current tab
+        self.change_appearance()
+        self.change_text_lable()
         self.tabWidget.currentChanged.connect(self.change_appearance)
         self.tabWidget.currentChanged.connect(self.change_text_lable)
 
+        #smoothingWindow setup
+        self.smothingComboBox.currentIndexChanged.connect(self.chooseSmoothingWindow)
+        self.stdSlider.valueChanged.connect(self.updateGaussian)
 
         # create canvas
         self.smoothingWindowCanvas = FigureCanvas(plt.figure(figsize=(4, 3)))
@@ -331,10 +341,8 @@ class Ui_MainWindow(object):
         self.ecgInputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.ecgOutputSpectrogramCanvas = FigureCanvas(plt.figure(figsize=(1,1)))
         self.init_empty_canvases()
-        # Define a dictionary for modes, sliders, and their ranges
-        
-        
 
+        # Define a dictionary for modes, sliders, and their ranges
         self.modes_and_sliders = {
             1:{
                 1: (0, 0),
@@ -399,12 +407,17 @@ class Ui_MainWindow(object):
             }
         }
         self.spectro_checkBox.stateChanged.connect(lambda state : self.toggle_spectrogram(state))
+
+        #connect pause_play_button
         self.pause_play_button.clicked.connect(self.playPauseLoadedSound)  # Connect to playPauseLoadedSound method
+
+        #number of output
+        self.number_of_output_file=0
 
 
 
         self.rewind_button.clicked.connect(self.rewindLoadedSound) 
-        self.rewind_button.clicked.connect(self.animalTimeInputCanvas.rewind)
+       
 
 
     
@@ -467,7 +480,6 @@ class Ui_MainWindow(object):
         #check current tab
         currentTabindex=self.tabWidget.currentIndex()
         print(currentTabindex)
-
         if currentTabindex == 1 or currentTabindex == 2 or currentTabindex == 3:    
         # Open a file dialog and get the selected file name
             fileName, _ = QFileDialog.getOpenFileName(
@@ -507,8 +519,6 @@ class Ui_MainWindow(object):
                     # Time domain coordinates
                     self.time_domain_Y_coordinates = time_values
                     self.time_domain_X_coordinates = np.arange(len(self.time_domain_Y_coordinates)) / record.fs
-
-
         # Store x and y coordinates as a list of tuples
         self.xy_coordinates = list(zip(self.time_domain_X_coordinates, self.time_domain_Y_coordinates))
 
@@ -517,7 +527,6 @@ class Ui_MainWindow(object):
         self.frequencies = np.fft.fftfreq(len(self.fft_result), 1 / self.sample_rate)
         self.output = False
         
-
         self.plotTimeDomain(self.modecanvas[currentTabindex]["timein"],self.xy_coordinates)
         self.plotFrequencyDomain(self.modecanvas[currentTabindex]["frequency"],self.frequencies,np.abs(self.fft_result)) 
         self.temparray=self.fft_result.copy()
@@ -533,13 +542,10 @@ class Ui_MainWindow(object):
     
     def chooseSmoothingWindow(self):
         window_type = self.smothingComboBox.currentText()
-
         # Clear the existing plot
         self.smoothingWindowCanvas.figure.clf()
-
         # Create a new subplot
         ax = self.smoothingWindowCanvas.figure.add_subplot(111)
-
         # Plot the selected window
         if window_type == "Rectangle":
             window = np.ones(100)  # Replace with your desired length
@@ -557,18 +563,12 @@ class Ui_MainWindow(object):
         ax.set_xlabel("Sample")
         ax.set_ylabel("Amplitude")
         ax.grid(True)
-
         # Redraw the canvas
         self.smoothingWindowCanvas.draw()
 
     def updateGaussian(self):
         self.sigma=self.stdSlider.value()
         self.chooseSmoothingWindow()
-
-    
-
-
-
 
     def change_appearance(self):
             self.current_tab_index = self.tabWidget.currentIndex()
@@ -593,12 +593,29 @@ class Ui_MainWindow(object):
                 self.frame_normal.setVisible(True)
                 self.frame_uni.setVisible(False)
 
+    def change_text_lable(self):
+        self.current_tab_index = self.tabWidget.currentIndex()
+        if self.current_tab_index == 2:
+            self.label_1.setText("Elephant")
+            self.label_2.setText("Bat")
+            self.label_3.setText("Bat")
+            self.label_4.setText("Whale")
+        elif self.current_tab_index == 3:
+            self.label_1.setText("Drums")
+            self.label_2.setText("Xylophone")
+            self.label_3.setText("Occordion")
+            self.label_4.setText("Cymbal")
+        elif self.current_tab_index == 4:
+            self.label_1.setText("Normal ECG")
+            self.label_2.setText("Sinus Rhythm")
+            self.label_3.setText("Atrial")
+            self.label_4.setText("Myocardial")
+
     def changefrequencycomp(self, value, range,mode):
         for i, frequency in enumerate(self.frequencies):
                 if (self.modes_and_sliders[mode][range][0]>np.abs(frequency)>self.modes_and_sliders[mode][range][1]):
                         self.temparray[i] = self.fft_result[i].copy()
-                        self.temparray[i] = self.temparray[i]*(value / 10)
-             
+                        self.temparray[i] = self.temparray[i]*(value / 10)     
         self.plotFrequencyDomain(self.modecanvas[mode]["frequency"],self.frequencies, np.abs(self.temparray)) 
         self.add_shaded_region(self.modecanvas[mode]["frequency"], self.frequencies, np.abs(self.fft_result), np.abs(self.temparray)) 
         self.output = True 
@@ -620,28 +637,9 @@ class Ui_MainWindow(object):
         ax.grid(True)
         canvas.draw()
 
-    def change_text_lable(self):
-        self.current_tab_index = self.tabWidget.currentIndex()
-        if self.current_tab_index == 2:
-            self.label_1.setText("Elephant")
-            self.label_2.setText("Bat")
-            self.label_3.setText("Bat")
-            self.label_4.setText("Whale")
-        elif self.current_tab_index == 3:
-            self.label_1.setText("Drums")
-            self.label_2.setText("Xylophone")
-            self.label_3.setText("Occordion")
-            self.label_4.setText("Cymbal")
-        elif self.current_tab_index == 4:
-            self.label_1.setText("Normal ECG")
-            self.label_2.setText("Sinus Rhythm")
-            self.label_3.setText("Atrial")
-            self.label_4.setText("Myocardial")
-
     def plotTimeDomain(self, canvas, xy_coordinates):
         x, y = zip(*xy_coordinates)
         canvas.upload_data(x,y)
-
 
     def plotFrequencyDomain(self, canvas,x,y):
         ax = canvas.figure.clear()
@@ -667,9 +665,10 @@ class Ui_MainWindow(object):
         canvas.draw()
 
     def playPauseLoadedSound(self):
-        self.modecanvas[(self.tabWidget.currentIndex())]["timein"].play_or_pause
+        self.modecanvas[(self.tabWidget.currentIndex())]["timein"].play_or_pause()
         if hasattr(self, 'file_path') and self.file_path:
-            if not hasattr(self, 'media_player') and self.number_of_output_file == 0:
+            if not hasattr(self, 'media_player') or self.number_of_output_file > 0:
+                print("a7a")
                 media_content = QMediaContent(QtCore.QUrl.fromLocalFile(self.file_path))
                 self.media_player = QMediaPlayer()
                 self.media_player.setMedia(media_content)
@@ -701,7 +700,7 @@ class Ui_MainWindow(object):
         y=y.astype(np.float32)
         xy_coordinates = list(zip(time, y))
         self.plotTimeDomain(canvas, xy_coordinates) 
-        # self.convertToWavFile(y,self.sample_rate)
+        self.convertToWavFile(y,self.sample_rate)
         input_canvas.link_with_me(canvas)
         input_canvas.rewind()
         self.rewindLoadedSound()
@@ -709,10 +708,14 @@ class Ui_MainWindow(object):
         return y
     
     def convertToWavFile(self,data,fs):
+        print("1")
         self.number_of_output_file=self.number_of_output_file+1
         self.name_of_output="out"+str(self.number_of_output_file)+".wav"
+        print("2")
         wavf.write(self.name_of_output, fs, data)
+        print("3")
         if self.number_of_output_file>1:
+             print("4")
              os.remove("out" + str(self.number_of_output_file - 1) + ".wav")
         
     def resetNumber_of_output_file(self):
