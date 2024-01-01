@@ -284,6 +284,9 @@ class Ui_MainWindow(object):
         self.tabWidget.setCurrentIndex(4)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+        #create media player object
+        self.media_player = QMediaPlayer()
+
         #sigma of STD
         self.sigma=1
         
@@ -411,7 +414,7 @@ class Ui_MainWindow(object):
         #connect pause_play_button
         self.pause_play_button.clicked.connect(self.playPauseLoadedSound)  # Connect to playPauseLoadedSound method
 
-        #number of output
+        #number of output sound files
         self.number_of_output_file=0
 
 
@@ -487,8 +490,6 @@ class Ui_MainWindow(object):
             )
             if fileName:
                 self.file_path = fileName  # Store the file path
-                print(fileName)
-                self.media_player = QMediaPlayer()
 
                 # Create a QUrl from the file name
                 url = QtCore.QUrl.fromLocalFile(fileName)
@@ -521,12 +522,10 @@ class Ui_MainWindow(object):
                     self.time_domain_X_coordinates = np.arange(len(self.time_domain_Y_coordinates)) / record.fs
         # Store x and y coordinates as a list of tuples
         self.xy_coordinates = list(zip(self.time_domain_X_coordinates, self.time_domain_Y_coordinates))
-
         # FFT coordinates
         self.fft_result = fft(self.time_domain_Y_coordinates)
         self.frequencies = np.fft.fftfreq(len(self.fft_result), 1 / self.sample_rate)
         self.output = False
-        
         self.plotTimeDomain(self.modecanvas[currentTabindex]["timein"],self.xy_coordinates)
         self.plotFrequencyDomain(self.modecanvas[currentTabindex]["frequency"],self.frequencies,np.abs(self.fft_result)) 
         self.temparray=self.fft_result.copy()
@@ -666,16 +665,14 @@ class Ui_MainWindow(object):
 
     def playPauseLoadedSound(self):
         self.modecanvas[(self.tabWidget.currentIndex())]["timein"].play_or_pause()
-        if hasattr(self, 'file_path') and self.file_path:
-            if not hasattr(self, 'media_player') or self.number_of_output_file > 0:
-                print("a7a")
-                media_content = QMediaContent(QtCore.QUrl.fromLocalFile(self.file_path))
-                self.media_player = QMediaPlayer()
-                self.media_player.setMedia(media_content)
-            if self.media_player.state() == QMediaPlayer.PlayingState:
-                self.media_player.pause()
-            else:
-                self.media_player.play()
+        if self.number_of_output_file > 0:
+            self.file_path=self.name_of_output
+            media_content = QMediaContent(QtCore.QUrl.fromLocalFile(self.file_path))
+            self.media_player.setMedia(media_content)
+        if self.media_player.state() == QMediaPlayer.PlayingState:
+            self.media_player.pause()
+        else:
+            self.media_player.play()
             
     def rewindLoadedSound(self):       
             self.media_player.setPosition(0)
@@ -703,25 +700,17 @@ class Ui_MainWindow(object):
         self.convertToWavFile(y,self.sample_rate)
         input_canvas.link_with_me(canvas)
         input_canvas.rewind()
-        self.rewindLoadedSound()
         self.playPauseLoadedSound()
+        self.rewindLoadedSound()
         return y
     
     def convertToWavFile(self,data,fs):
-        print("1")
         self.number_of_output_file=self.number_of_output_file+1
         self.name_of_output="out"+str(self.number_of_output_file)+".wav"
-        print("2")
         wavf.write(self.name_of_output, fs, data)
-        print("3")
         if self.number_of_output_file>1:
-             print("4")
              os.remove("out" + str(self.number_of_output_file - 1) + ".wav")
         
-    def resetNumber_of_output_file(self):
-        self.number_of_output_file=0
-                
-
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
