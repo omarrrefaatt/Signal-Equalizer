@@ -286,6 +286,7 @@ class Ui_MainWindow(object):
 
         #create media player object
         self.media_player = QMediaPlayer()
+        self.new_file=False
 
         #sigma of STD
         self.sigma=1
@@ -417,8 +418,7 @@ class Ui_MainWindow(object):
         #number of output sound files
         self.number_of_output_file=0
 
-
-
+        #connect rewind button
         self.rewind_button.clicked.connect(self.rewindLoadedSound) 
        
 
@@ -667,10 +667,11 @@ class Ui_MainWindow(object):
 
     def playPauseLoadedSound(self):
         self.modecanvas[(self.tabWidget.currentIndex())]["timein"].play_or_pause()
-        if self.number_of_output_file > 0:
+        if self.number_of_output_file > 0 and self.new_file==True:
             self.file_path=self.name_of_output
             media_content = QMediaContent(QtCore.QUrl.fromLocalFile(self.file_path))
             self.media_player.setMedia(media_content)
+            self.new_file=False
         if self.media_player.state() == QMediaPlayer.PlayingState:
             self.media_player.pause()
         else:
@@ -679,6 +680,8 @@ class Ui_MainWindow(object):
     def rewindLoadedSound(self):       
             self.media_player.setPosition(0)
             self.media_player.play()
+            self.modecanvas[(self.tabWidget.currentIndex())]["timein"].rewind()
+            self.modecanvas[(self.tabWidget.currentIndex())]["timeout"].rewind()
     
     def toggle_spectrogram(self, state):
          # Toggle the visibility of the stored AxesImage object based on checkbox state
@@ -693,20 +696,21 @@ class Ui_MainWindow(object):
             canvas.show()
             canvas2.show()
 
-    def calcAndPlotIfft(self,freq_mag,canvas,time,input_canvas):
+    def calcAndPlotIfft(self,freq_mag,output_canvas,time,input_canvas):
         #y=fft.ifft2(freq_mag)
         y=np.fft.ifft(freq_mag)
         y=y.astype(np.float32)
         xy_coordinates = list(zip(time, y))
-        self.plotTimeDomain(canvas, xy_coordinates) 
+        self.plotTimeDomain(output_canvas, xy_coordinates) 
         self.convertToWavFile(y,self.sample_rate)
-        input_canvas.link_with_me(canvas)
-        input_canvas.rewind()
+        input_canvas.link_with_me(output_canvas)
+        input_canvas.play_or_pause()
         self.playPauseLoadedSound()
-        self.rewindLoadedSound()
+        self.rewindLoadedSound
         return y
     
     def convertToWavFile(self,data,fs):
+        self.new_file=True
         self.number_of_output_file=self.number_of_output_file+1
         self.name_of_output="out"+str(self.number_of_output_file)+".wav"
         wavf.write(self.name_of_output, fs, data)

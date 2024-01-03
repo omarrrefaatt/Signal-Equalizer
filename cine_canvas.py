@@ -63,12 +63,16 @@ class MplCanvas(FigureCanvas):
     def link_with_me(self,canvas):
         canvas.y_min=self.y_min
         canvas.y_max=self.y_max
-        canvas.data_plotted=self.data_plotted
+        canvas.data_plotted=0
+        self.data_plotted=0
         canvas.shift_amount=self.shift_amount
         canvas.time_of_drawing=self.time_of_drawing
         canvas.window_size=self.window_size
         canvas.is_played=self.is_played
         canvas.zoomed_by=self.zoomed_by
+    # Create a new timer for the linked canvas
+        canvas.timer = QtCore.QTimer()
+        canvas.timer.timeout.connect(canvas.dynamic_plot)
         self.linked_canvas=canvas
         self.linked=True
 
