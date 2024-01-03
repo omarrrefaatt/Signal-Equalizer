@@ -61,6 +61,7 @@ class MplCanvas(FigureCanvas):
         self.draw()
         
     def link_with_me(self,canvas):
+        new=1
         canvas.y_min=self.y_min
         canvas.y_max=self.y_max
         canvas.data_plotted=0
@@ -87,7 +88,7 @@ class MplCanvas(FigureCanvas):
     def zoom_in(self):
         self.y_min*=0.9
         self.y_max*=0.9
-        #self.window_size=int(self.window_size*0.95)
+        self.window_size=int(self.window_size*0.9)
         self.zoomed_by=float(self.zoomed_by*0.9)
         if(self.linked):
             self.linked_canvas.zoom_in()
@@ -95,7 +96,7 @@ class MplCanvas(FigureCanvas):
     def zoom_out(self):
         self.y_min = self.y_min*1.1
         self.y_max = self.y_max*1.1
-        #self.window_size=int(self.window_size/0.95)
+        self.window_size=int(self.window_size*1.1)
         self.zoomed_by=float(self.zoomed_by*1.1)
         if(self.linked):
             self.linked_canvas.zoom_out()

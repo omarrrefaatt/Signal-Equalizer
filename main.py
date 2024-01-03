@@ -375,8 +375,8 @@ class Ui_MainWindow(object):
             },
             4: {
                 1: (50, 0),
-                2: (100, 50),
-                3: (450, 50),
+                2: (200, 40),
+                3: (450, 30),
                 4: (8, 0),
             },
         }
@@ -420,6 +420,11 @@ class Ui_MainWindow(object):
 
         #connect rewind button
         self.rewind_button.clicked.connect(self.rewindLoadedSound) 
+
+        #connect zoom in and zoom out buttons
+        self.zoom_in_button.clicked.connect(self.canvas_zoomIn)
+        self.zoom_out_button.clicked.connect(self.canvas_zoomOut)
+
        
 
 
@@ -482,7 +487,6 @@ class Ui_MainWindow(object):
     def loadFile(self):
         #check current tab
         currentTabindex=self.tabWidget.currentIndex()
-        print(currentTabindex)
         if currentTabindex == 1 or currentTabindex == 2 or currentTabindex == 3:    
         # Open a file dialog and get the selected file name
             fileName, _ = QFileDialog.getOpenFileName(
@@ -513,10 +517,8 @@ class Ui_MainWindow(object):
                     # Read the record
                     record = wfdb.rdrecord(file_path[:-4])
                     self.sample_rate = record.fs
-
                     # Extract time-domain values
                     time_values = record.p_signal[:, 0]  # Assuming the first column represents time-domain values
-                    
                     # Time domain coordinates
                     self.time_domain_Y_coordinates = time_values
                     self.time_domain_X_coordinates = np.arange(len(self.time_domain_Y_coordinates)) / record.fs
@@ -525,13 +527,11 @@ class Ui_MainWindow(object):
         # FFT coordinates
         self.fft_result = fft(self.time_domain_Y_coordinates)
         self.frequencies = np.fft.fftfreq(len(self.fft_result), 1 / self.sample_rate)
-        
         self.output = False
         self.plotTimeDomain(self.modecanvas[currentTabindex]["timein"],self.xy_coordinates)
-        self.plotFrequencyDomain(self.modecanvas[currentTabindex]["frequency"],self.frequencies,np.abs(self.fft_result)) 
+        self.plotFrequencyDomain(self.modecanvas[currentTabindex]["frequency"],self.frequencies,np.abs(self.fft_result))
         self.temparray=self.fft_result.copy()
-        self. plotSpectrogram( self.modecanvas[currentTabindex]["spectoin"],yaxis,self.sample_rate)
-        
+        self.plotSpectrogram(self.modecanvas[currentTabindex]["spectoin"],self.time_domain_Y_coordinates,self.sample_rate)
         if currentTabindex == 1:
              for i in range(0,10):
                 max_frequency = np.max(self.frequencies)
@@ -608,9 +608,9 @@ class Ui_MainWindow(object):
             self.label_4.setText("Cymbal")
         elif self.current_tab_index == 4:
             self.label_1.setText("Normal ECG")
-            self.label_2.setText("Sinus Rhythm")
+            self.label_2.setText("Myocardial")
             self.label_3.setText("Atrial")
-            self.label_4.setText("Myocardial")
+            self.label_4.setText("Sinus Rhythm")
 
     def changefrequencycomp(self, value, range,mode):
         for i, frequency in enumerate(self.frequencies):
@@ -667,6 +667,8 @@ class Ui_MainWindow(object):
 
     def playPauseLoadedSound(self):
         self.modecanvas[(self.tabWidget.currentIndex())]["timein"].play_or_pause()
+        if self.current_tab_index == 4:
+            return
         if self.number_of_output_file > 0 and self.new_file==True:
             self.file_path=self.name_of_output
             media_content = QMediaContent(QtCore.QUrl.fromLocalFile(self.file_path))
@@ -677,11 +679,20 @@ class Ui_MainWindow(object):
         else:
             self.media_player.play()
             
-    def rewindLoadedSound(self):       
-            self.media_player.setPosition(0)
-            self.media_player.play()
+    def rewindLoadedSound(self):     
+            if self.current_tab_index < 4:  
+                self.media_player.setPosition(0)
+                self.media_player.play()
             self.modecanvas[(self.tabWidget.currentIndex())]["timein"].rewind()
             self.modecanvas[(self.tabWidget.currentIndex())]["timeout"].rewind()
+
+    def canvas_zoomIn(self):
+        self.modecanvas[(self.tabWidget.currentIndex())]["timein"].zoom_in()
+        self.modecanvas[(self.tabWidget.currentIndex())]["timeout"].zoom_in()
+
+    def canvas_zoomOut(self):
+        self.modecanvas[(self.tabWidget.currentIndex())]["timein"].zoom_out()
+        self.modecanvas[(self.tabWidget.currentIndex())]["timeout"].zoom_out()
     
     def toggle_spectrogram(self, state):
          # Toggle the visibility of the stored AxesImage object based on checkbox state
@@ -706,10 +717,13 @@ class Ui_MainWindow(object):
         input_canvas.link_with_me(output_canvas)
         input_canvas.play_or_pause()
         self.playPauseLoadedSound()
-        self.rewindLoadedSound
+        self.rewindLoadedSound()
+        
         return y
     
     def convertToWavFile(self,data,fs):
+        if self.current_tab_index==4:
+            return
         self.new_file=True
         self.number_of_output_file=self.number_of_output_file+1
         self.name_of_output="out"+str(self.number_of_output_file)+".wav"
