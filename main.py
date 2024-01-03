@@ -363,15 +363,15 @@ class Ui_MainWindow(object):
             },
             2: {
                 1: (2500, 500),
-                2: (1000, 125),
-                3: (4000, 1000),
+                2: (500, 0),
+                3: (4000, 2500),
                 4: (16000, 4000),
             },
             3: {
                 1: (250, 0),
-                2: (1000, 250),
-                3: (4000, 1000),
-                4: (16000, 4000),
+                2: (700, 250),
+                3: (3000, 700),
+                4: (16000, 3000),
             },
             4: {
                 1: (50, 0),
@@ -598,14 +598,14 @@ class Ui_MainWindow(object):
         self.current_tab_index = self.tabWidget.currentIndex()
         if self.current_tab_index == 2:
             self.label_1.setText("Elephant")
-            self.label_2.setText("Bat")
-            self.label_3.setText("Bat")
-            self.label_4.setText("Whale")
+            self.label_2.setText("Whale")
+            self.label_3.setText("Eagle")
+            self.label_4.setText("Bat")
         elif self.current_tab_index == 3:
-            self.label_1.setText("Drums")
+            self.label_1.setText("Bass")
             self.label_2.setText("Xylophone")
-            self.label_3.setText("Occordion")
-            self.label_4.setText("Cymbal")
+            self.label_3.setText("Guitar")
+            self.label_4.setText("Hi-Hats")
         elif self.current_tab_index == 4:
             self.label_1.setText("Normal ECG")
             self.label_2.setText("Myocardial")
